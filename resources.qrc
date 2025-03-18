@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>photos/AE.png</file>
+        <file>photos/camera.png</file>
+        <file>photos/classification.png</file>
+        <file>photos/Expend.jpg</file>
+        <file>photos/minus.png</file>
+        <file>photos/precdition.png</file>
+        <file>photos/prediction2.png</file>
+        <file>photos/XYplatform.png</file>
+        <file>photos/DownArrow.png</file>
+        <file>photos/LeftArrow.png</file>
+        <file>photos/RightArrow.png</file>
+        <file>photos/UpArrow.png</file>
+        <file>photos/FastMove.png</file>
+    </qresource>
+</RCC>
