@@ -239,18 +239,15 @@ QImage* CAcquisitionThread::PopFrontFromShowImageDeque()
     return pobjImage;
 }
 //直取一个值而不pop
-QImage CAcquisitionThread::GetFrontFromShowImageDeque()
+QImage* CAcquisitionThread::GetFrontFromShowImageDeque()
 {
-    qDebug()<<"GetFrontFromShowImageDeque";
-    //感觉没必要加锁
-    QMutexLocker locker(&m_objDequeMutex);
+    qDebug() << "GetFrontFromShowImageDeque";
 
-    if (m_objShowImageDeque.empty())
-    {
-        return QImage();
+    if (m_objShowImageDeque.empty()) {
+        return nullptr; // 避免返回野指针
     }
 
-    return m_objShowImageDeque.front()->copy();
+    return new QImage(m_objShowImageDeque.front()->copy()); // 复制后返回堆对象
 }
 
 //----------------------------------------------------------------------------------

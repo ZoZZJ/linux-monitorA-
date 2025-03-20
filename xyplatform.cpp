@@ -33,37 +33,12 @@ XyPlatform::XyPlatform(QWidget *parent)
     connect(controllerThread, &QThread::finished, controller, &PlatformController::deleteLater);
     connect(controllerThread, &QThread::finished, controllerThread, &QThread::deleteLater);
 
-
+    radioGroup1 = new QButtonGroup(this);  // 创建按钮组
     enableAxis();
-    float velocity0 = 0.0f;
-    float velocity1 = 0.0f;
 
-   // controller->setBothAxisVelocity(0,0);
 
-        // 获取第0轴的速度
-        if (controller->getAxisVelocity(0, velocity0)) {
-            qDebug() << "Axis 0 Velocity:" << velocity0;
-        } else {
-            qDebug() << "Failed to get Axis 0 Velocity";
-        }
-
-        // 获取第1轴的速度
-        if (controller->getAxisVelocity(1, velocity1)) {
-            qDebug() << "Axis 1 Velocity:" << velocity1;
-        } else {
-            qDebug() << "Failed to get Axis 1 Velocity";
-        }
-
-        float pos0 = 0.0f;
-        float pos1 = 0.0f;
-
-       controller->readAxisPosition(0,pos0);
-       controller->readAxisPosition(1,pos1);
-
-        qDebug() <<"Axis 1 pos: " << pos0;
-
-        qDebug() <<"Axis 1 pos: " << pos1;
-
+    xyui->moveEndureBtn->setChecked(true);
+    xyui->moveOnceBtn->setChecked(false);
 }
 
 XyPlatform::~XyPlatform()
@@ -74,6 +49,20 @@ XyPlatform::~XyPlatform()
 
 
 void XyPlatform::setupUI() {
+
+
+    radioGroupDistance->addButton(xyui->distance0 , 0);
+    radioGroupDistance->addButton(xyui->distance1 , 1);
+    radioGroupDistance->addButton(xyui->distance2 , 2);
+    radioGroupDistance->addButton(xyui->distance3 , 3);
+
+
+    radioGroupVelocity->addButton(xyui->vel0 , 0);
+    radioGroupVelocity->addButton(xyui->vel1 , 1);
+    radioGroupVelocity->addButton(xyui->vel2 , 2);
+
+    radioGroupMode->addButton(xyui->moveEndureBtn , 0);
+    radioGroupMode->addButton(xyui->moveOnceBtn , 1);
 
 
 }
@@ -113,16 +102,38 @@ void XyPlatform::setupConnections() {
 
 void XyPlatform::handleMoveX(bool movePositve) {
     int axis = 0;
-     std::cout << "axis "<<axis<<"is moving  "<<std::endl;
-    if(movePositve) controller->MovePositive(axis);
-    else  controller->MoveNegative(axis);
+    if(xyui->moveEndureBtn->isChecked()){
+
+        std::cout << "axis "<<axis<<"is moving  "<<std::endl;
+        if(movePositve) controller->MovePositive(axis);
+        else  controller->MoveNegative(axis);
+    }else{
+
+        QAbstractButton *checkedButton = radioGroupDistance->checkedButton(); // 获取选中的按钮
+        if (checkedButton) {
+            if(movePositve) controller->MoveToRelativePos(axis,checkedButton->text().toFloat());
+            else controller->MoveToRelativePos(axis,-checkedButton->text().toFloat());
+        }
+        }
+    }
+
 }
 
 void XyPlatform::handleMoveY(bool movePositve) {
-    int axis = 1;
-    std::cout << "axis "<<axis<<"is moving"<<std::endl;
-    if(!movePositve) controller->MovePositive(axis);
-    else  controller->MoveNegative(axis);
+     int axis = 1;
+    if(xyui->moveEndureBtn->isChecked()){
+        std::cout << "axis "<<axis<<"is moving"<<std::endl;
+        if(!movePositve) controller->MovePositive(axis);
+        else  controller->MoveNegative(axis);
+    } else{
+        QAbstractButton *checkedButton = radioGroupDistance->checkedButton(); // 获取选中的按钮
+        if (checkedButton) {
+            if(!movePositve) controller->MoveToRelativePos(axis,checkedButton->text().toFloat());
+            else controller->MoveToRelativePos(axis,-checkedButton->text().toFloat());
+        }
+
+    }
+
 }
 
 

@@ -1283,8 +1283,8 @@ void CGxViewer::StartAcquisition_clicked_slot(){
     qDebug()<<"StartAcquisition_clicked_slot";
 }
 //为mainui提供的获取图片的公共方法
-QImage CGxViewer::GetShowImageFromAcquisionThread(){
-    qDebug()<<"GetShowImageFromAcquisionThread";
+QImage* CGxViewer::GetShowImageFromAcquisionThread(){
+
     return m_pobjAcqThread->GetFrontFromShowImageDeque();
 }
 

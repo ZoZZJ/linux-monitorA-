@@ -49,17 +49,23 @@ void CameraCaptureThread::run() {
 #else // PLATFORM_LINUX
 
     while (!isInterruptionRequested()) {
+        QImage* image = CGxViewer::getInstance().GetShowImageFromAcquisionThread();
 
-         QImage image = CGxViewer::getInstance().GetShowImageFromAcquisionThread();
+        if (!image) {
+            QThread::msleep(50);  // 避免无效循环占用 CPU
+            continue;
+        }
 
-           qDebug()<<"get image";
-         QPixmap pixmap = QPixmap::fromImage(image);
+        QPixmap pixmap = QPixmap::fromImage(*image); // 取消解引用空指针的风险
 
-         m_queue.enqueue(pixmap);
-         qDebug()<<m_queue.size()<<endl;
+        m_queue.enqueue(pixmap);
+        qDebug() << "Queue size:" << m_queue.size();
 
-        QThread::msleep(50);
+        delete image; // 释放内存，避免内存泄漏
+
+        QThread::msleep(40);
     }
+
 
 #endif
 }
