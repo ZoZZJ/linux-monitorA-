@@ -461,5 +461,9 @@ void control_interface::setupStatusBar() {
     // m_platformStatusLabel = platformStatusLabel;
 }
 
+//xy重连s
+void control_interface::on_XYtoolButton_triggered(QAction *arg1)
+{
 
+}
 

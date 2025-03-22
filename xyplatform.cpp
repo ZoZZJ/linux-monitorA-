@@ -71,6 +71,15 @@ void XyPlatform::setupConnections() {
 
     connect(xyui->EnableButton,&QPushButton::pressed,this,&XyPlatform::ChangePlatformEnabledStatus);
 
+    QObject::connect(radioGroupVelocity, &QButtonGroup::buttonClicked, [this](QAbstractButton *button) {
+        controller->setAxisVelocity(0,button->text().toFloat());
+        controller->setAxisVelocity(1,button->text().toFloat());
+    });
+
+    // QObject::connect(radioGroupMode, &QButtonGroup::buttonClicked, [this](QAbstractButton *button) {
+    //     controller->setAxisVelocity(0,button->text().toFloat());
+    //     controller->setAxisVelocity(1,button->text().toFloat());
+    // });
 
     // 长按移动
     connect(xyui->UpButton, &QPushButton::pressed, [=]() {  handleMoveY(1); });
@@ -211,6 +220,7 @@ void XyPlatform::on_QMoveEnableWidgetButton_clicked()
 {
     float postion0 =  xyui->TargetYposEdit->text().toFloat();
     float postion1 = xyui->TargetXposEdit->text().toFloat();
+
     controller->MoveToAbsolutePos(0,postion0);
     controller->MoveToAbsolutePos(1,postion1);
 }
@@ -223,6 +233,7 @@ void XyPlatform::onRadioButtonClicked(QAbstractButton *button)
 
     controller->setAxisVelocity(0,num);
     controller->setAxisVelocity(1,num);
+
 }
 
 
