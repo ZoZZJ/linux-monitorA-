@@ -54,7 +54,7 @@ public:
     void StopAcquisition_clicked_slot();
     void StartAcquisition_clicked_slot();
 
-    QImage GetShowImageFromAcquisionThread();
+    QImage* GetShowImageFromAcquisionThread();
 
 
 private:

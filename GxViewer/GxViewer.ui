@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>977</width>
-    <height>601</height>
+    <width>1384</width>
+    <height>810</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -584,7 +584,7 @@
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <property name="sizeConstraint">
-         <enum>QLayout::SetDefaultConstraint</enum>
+         <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
         </property>
         <item>
          <widget class="QGroupBox" name="Camera_Select">

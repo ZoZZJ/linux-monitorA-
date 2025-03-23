@@ -24,8 +24,15 @@ public:
 private:
 
     Ui::XyPlatform *xyui;
+    QButtonGroup *radioGroupMode;
+    QButtonGroup *radioGroupDistance;
+    QButtonGroup *radioGroupVelocity;
+
+private:
+
     bool platformEnabled = false;
     PlatformController* controller; // 控制器实例
+    int m_MoveType = 0; //0=步进 1=持续
     QTimer* KeepMovingTimer;       // 用于长按按钮触发移动
 
     void setupUI();          // 初始化UI
