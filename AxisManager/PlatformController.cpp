@@ -166,8 +166,8 @@ bool PlatformController::MoveToAbsolutePos(int axisId, float Position) {
      int ret = writeFloatRegister(address0, Position);
 
      if(ret) {
-         int address1 = (axisId == 0) ? 9840 : 9842; // 轴对应的地址
-         return writeFloatRegister(address1, Position);
+         int address1 = (axisId == 0) ? 9840 : 9841; // 轴对应的地址
+         return writeSingleCoil(address1, true);
      }
      return false;
 }
@@ -180,8 +180,8 @@ bool PlatformController::MoveToRelativePos(int axisId, float Position) {
     int ret = writeFloatRegister(address, Position);
 
     if(ret) {
-        int address1 = (axisId == 0) ? 9872 : 9844; // 轴对应的地址
-        return writeFloatRegister(address1, Position);
+        int address1 = (axisId == 0) ? 9872 : 9873; // 轴对应的地址
+        return writeSingleCoil(address1, true);
     }
     return false;
 }
@@ -218,7 +218,7 @@ bool PlatformController::readAxisPosition(int axisId, float& position) {
 //5. 定时器循环控制
 void PlatformController::startPolling() {
     if (!pollingTimer->isActive()) {
-        pollingTimer->start(100); // 每 1 秒循环读取
+        pollingTimer->start(1000); // 每 1 秒循环读取
     }
 }
 

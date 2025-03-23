@@ -71,6 +71,8 @@ private slots:
    // void EnqueueOnePicture();
 
 
+    void on_XYtoolButton_triggered(QAction *arg1);
+
 signals:
     void newFrameCaptured(const QImage &frame);
     void udpStopSignal();

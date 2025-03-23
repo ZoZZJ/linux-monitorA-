@@ -58,7 +58,7 @@ public:
     QImage* PopFrontFromEmptyBufferDeque();
 
     ///获取一个图片但是不pop
-    QImage GetFrontFromShowImageDeque();
+    QImage* GetFrontFromShowImageDeque();
 
 
     /// Clear both deque

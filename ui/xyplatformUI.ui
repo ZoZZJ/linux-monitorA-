@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1077</width>
-    <height>574</height>
+    <width>1117</width>
+    <height>580</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -77,8 +77,8 @@ background-color: rgb(240, 240, 240);</string>
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>40</width>
-                      <height>40</height>
+                      <width>9999</width>
+                      <height>9999</height>
                      </size>
                     </property>
                     <property name="font">
@@ -110,8 +110,8 @@ background-color: rgb(240, 240, 240);</string>
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>160</width>
-                      <height>80</height>
+                      <width>9999</width>
+                      <height>99999</height>
                      </size>
                     </property>
                     <property name="styleSheet">
@@ -143,9 +143,6 @@ background-color: rgb(240, 240, 240);</string>
                   </item>
                   <item>
                    <spacer name="horizontalSpacer">
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
                     <property name="sizeHint" stdset="0">
                      <size>
                       <width>40</width>
@@ -157,7 +154,7 @@ background-color: rgb(240, 240, 240);</string>
                  </layout>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_24">
+                 <layout class="QHBoxLayout" name="horizontalLayout_24" stretch="1,2,2,0">
                   <item>
                    <widget class="QLabel" name="label_21">
                     <property name="minimumSize">
@@ -168,8 +165,8 @@ background-color: rgb(240, 240, 240);</string>
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>40</width>
-                      <height>40</height>
+                      <width>9999</width>
+                      <height>9999</height>
                      </size>
                     </property>
                     <property name="font">
@@ -201,8 +198,8 @@ background-color: rgb(240, 240, 240);</string>
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>160</width>
-                      <height>80</height>
+                      <width>9999</width>
+                      <height>99999</height>
                      </size>
                     </property>
                     <property name="styleSheet">
@@ -237,9 +234,6 @@ background-color: rgb(240, 240, 240);</string>
                   </item>
                   <item>
                    <spacer name="horizontalSpacer_2">
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
                     <property name="sizeHint" stdset="0">
                      <size>
                       <width>40</width>
@@ -281,7 +275,7 @@ background-color: rgb(240, 240, 240);</string>
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_11">
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_26">
+                 <layout class="QHBoxLayout" name="horizontalLayout_26" stretch="1,2,1,1,0">
                   <item>
                    <widget class="QLabel" name="label_23">
                     <property name="minimumSize">
@@ -292,8 +286,8 @@ background-color: rgb(240, 240, 240);</string>
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>40</width>
-                      <height>40</height>
+                      <width>9999</width>
+                      <height>9999</height>
                      </size>
                     </property>
                     <property name="font">
@@ -311,6 +305,12 @@ background-color: rgb(240, 240, 240);</string>
                   </item>
                   <item>
                    <widget class="QLCDNumber" name="XSelfDefineLcd">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="minimumSize">
                      <size>
                       <width>0</width>
@@ -319,8 +319,8 @@ background-color: rgb(240, 240, 240);</string>
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>160</width>
-                      <height>80</height>
+                      <width>9999</width>
+                      <height>9999</height>
                      </size>
                     </property>
                     <property name="styleSheet">
@@ -340,7 +340,7 @@ background-color: rgb(240, 240, 240);</string>
                   <item>
                    <widget class="QLabel" name="label_3">
                     <property name="sizePolicy">
-                     <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                       <horstretch>0</horstretch>
                       <verstretch>0</verstretch>
                      </sizepolicy>
@@ -352,6 +352,12 @@ background-color: rgb(240, 240, 240);</string>
                   </item>
                   <item>
                    <widget class="QPushButton" name="SetXZeroButton">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="minimumSize">
                      <size>
                       <width>0</width>
@@ -360,8 +366,8 @@ background-color: rgb(240, 240, 240);</string>
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>120</width>
-                      <height>70</height>
+                      <width>99999</width>
+                      <height>99999</height>
                      </size>
                     </property>
                     <property name="text">
@@ -371,9 +377,6 @@ background-color: rgb(240, 240, 240);</string>
                   </item>
                   <item>
                    <spacer name="horizontalSpacer_3">
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
                     <property name="sizeHint" stdset="0">
                      <size>
                       <width>40</width>
@@ -385,7 +388,7 @@ background-color: rgb(240, 240, 240);</string>
                  </layout>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_27">
+                 <layout class="QHBoxLayout" name="horizontalLayout_27" stretch="1,2,1,1,0">
                   <item>
                    <widget class="QLabel" name="label_24">
                     <property name="minimumSize">
@@ -396,8 +399,8 @@ background-color: rgb(240, 240, 240);</string>
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>40</width>
-                      <height>40</height>
+                      <width>9999</width>
+                      <height>9999</height>
                      </size>
                     </property>
                     <property name="font">
@@ -415,6 +418,12 @@ background-color: rgb(240, 240, 240);</string>
                   </item>
                   <item>
                    <widget class="QLCDNumber" name="YSelfDefineLcd">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="minimumSize">
                      <size>
                       <width>0</width>
@@ -423,8 +432,8 @@ background-color: rgb(240, 240, 240);</string>
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>160</width>
-                      <height>80</height>
+                      <width>99999</width>
+                      <height>999999</height>
                      </size>
                     </property>
                     <property name="styleSheet">
@@ -444,7 +453,7 @@ background-color: rgb(240, 240, 240);</string>
                   <item>
                    <widget class="QLabel" name="label_4">
                     <property name="sizePolicy">
-                     <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                       <horstretch>0</horstretch>
                       <verstretch>0</verstretch>
                      </sizepolicy>
@@ -457,21 +466,21 @@ background-color: rgb(240, 240, 240);</string>
                   <item>
                    <widget class="QPushButton" name="SetYZeroButton">
                     <property name="sizePolicy">
-                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                       <horstretch>0</horstretch>
                       <verstretch>0</verstretch>
                      </sizepolicy>
                     </property>
                     <property name="minimumSize">
                      <size>
-                      <width>120</width>
-                      <height>70</height>
+                      <width>0</width>
+                      <height>0</height>
                      </size>
                     </property>
                     <property name="maximumSize">
                      <size>
-                      <width>120</width>
-                      <height>70</height>
+                      <width>99999</width>
+                      <height>99999</height>
                      </size>
                     </property>
                     <property name="text">
@@ -481,9 +490,6 @@ background-color: rgb(240, 240, 240);</string>
                   </item>
                   <item>
                    <spacer name="horizontalSpacer_4">
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
                     <property name="sizeHint" stdset="0">
                      <size>
                       <width>40</width>
@@ -739,9 +745,6 @@ background-color: rgb(240, 240, 240);</string>
                  <layout class="QVBoxLayout" name="verticalLayout">
                   <item>
                    <spacer name="verticalSpacer">
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
                     <property name="sizeType">
                      <enum>QSizePolicy::Fixed</enum>
                     </property>
@@ -1101,7 +1104,7 @@ background-color: rgb(244, 244, 244);</string>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1,1">
           <property name="sizeConstraint">
-           <enum>QLayout::SetMaximumSize</enum>
+           <enum>QLayout::SetDefaultConstraint</enum>
           </property>
           <item>
            <widget class="QGroupBox" name="groupBox">
@@ -1123,12 +1126,12 @@ background-color: rgb(244, 244, 244);</string>
              <item>
               <layout class="QVBoxLayout" name="verticalLayout_15">
                <property name="sizeConstraint">
-                <enum>QLayout::SetMaximumSize</enum>
+                <enum>QLayout::SetDefaultConstraint</enum>
                </property>
                <item>
-                <widget class="QRadioButton" name="radioButton_5">
+                <widget class="QRadioButton" name="moveOnceBtn">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1145,9 +1148,9 @@ background-color: rgb(244, 244, 244);</string>
                 </widget>
                </item>
                <item>
-                <widget class="QRadioButton" name="radioButton_6">
+                <widget class="QRadioButton" name="moveEndureBtn">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1186,15 +1189,9 @@ background-color: rgb(244, 244, 244);</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_12">
              <item>
-              <layout class="QVBoxLayout" name="verticalLayout_20">
-               <property name="sizeConstraint">
-                <enum>QLayout::SetMaximumSize</enum>
-               </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_11">
                <item>
-                <widget class="QRadioButton" name="radioButton_2">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
+                <widget class="QRadioButton" name="distance0">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -1202,23 +1199,10 @@ background-color: rgb(244, 244, 244);</string>
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>0.01 mm</string>
+                  <string>0.01</string>
                  </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QRadioButton" name="radioButton_10">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>0.1 mm</string>
+                 <property name="checkable">
+                  <bool>true</bool>
                  </property>
                  <property name="checked">
                   <bool>false</bool>
@@ -1226,18 +1210,86 @@ background-color: rgb(244, 244, 244);</string>
                 </widget>
                </item>
                <item>
-                <widget class="QRadioButton" name="radioButton_11">
-                 <property name="enabled">
-                  <bool>false</bool>
+                <widget class="QLabel" name="label_14">
+                 <property name="text">
+                  <string>mm/s</string>
                  </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_16">
+               <item>
+                <widget class="QRadioButton" name="distance1">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>1mm</string>
+                  <string>0.1</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_15">
+                 <property name="text">
+                  <string>mm/s</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_17">
+               <item>
+                <widget class="QRadioButton" name="distance2">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>1</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_16">
+                 <property name="text">
+                  <string>mm/s</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_18">
+               <item>
+                <widget class="QRadioButton" name="distance3">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>10</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
@@ -1245,18 +1297,9 @@ background-color: rgb(244, 244, 244);</string>
                 </widget>
                </item>
                <item>
-                <widget class="QRadioButton" name="radioButton">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
+                <widget class="QLabel" name="label_17">
                  <property name="text">
-                  <string>10 mm</string>
+                  <string>mm/s</string>
                  </property>
                 </widget>
                </item>
@@ -1281,14 +1324,11 @@ background-color: rgb(244, 244, 244);</string>
             <property name="title">
              <string>速度选择</string>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_19">
+            <layout class="QVBoxLayout" name="verticalLayout_16">
              <item>
-              <layout class="QVBoxLayout" name="verticalLayout_16">
-               <property name="sizeConstraint">
-                <enum>QLayout::SetMaximumSize</enum>
-               </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_8">
                <item>
-                <widget class="QRadioButton" name="radioButton_8">
+                <widget class="QRadioButton" name="vel0">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -1296,7 +1336,7 @@ background-color: rgb(244, 244, 244);</string>
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>0.5 mm/s</string>
+                  <string>10</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
@@ -1304,7 +1344,18 @@ background-color: rgb(244, 244, 244);</string>
                 </widget>
                </item>
                <item>
-                <widget class="QRadioButton" name="radioButton_7">
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>mm/s</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_9">
+               <item>
+                <widget class="QRadioButton" name="vel1">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -1315,7 +1366,7 @@ background-color: rgb(244, 244, 244);</string>
                   <enum>Qt::LeftToRight</enum>
                  </property>
                  <property name="text">
-                  <string>0.1 mm/s</string>
+                  <string>20</string>
                  </property>
                  <property name="checked">
                   <bool>false</bool>
@@ -1323,7 +1374,18 @@ background-color: rgb(244, 244, 244);</string>
                 </widget>
                </item>
                <item>
-                <widget class="QRadioButton" name="radioButton_9">
+                <widget class="QLabel" name="label_8">
+                 <property name="text">
+                  <string>mm/s</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_10">
+               <item>
+                <widget class="QRadioButton" name="vel2">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                    <horstretch>0</horstretch>
@@ -1331,10 +1393,17 @@ background-color: rgb(244, 244, 244);</string>
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>0.3 mm/s</string>
+                  <string> 40</string>
                  </property>
                  <property name="checked">
                   <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_9">
+                 <property name="text">
+                  <string>mm/s</string>
                  </property>
                 </widget>
                </item>

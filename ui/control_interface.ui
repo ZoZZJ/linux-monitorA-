@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -31,18 +31,14 @@
     <height>9000</height>
    </size>
   </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::NoContextMenu</enum>
+  </property>
   <property name="windowTitle">
    <string>control_interface</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QWidget{
-	//border:1px solid #313236;
-	//border-radius:4px;
-	
-
-}
-
-</string>
+   <string notr="true"/>
   </property>
   <property name="iconSize">
    <size>
@@ -88,28 +84,7 @@
        <enum>Qt::LeftToRight</enum>
       </property>
       <property name="styleSheet">
-       <string notr="true">QTabWidget::tab-bar {
-    left: 0px; /* 将 TabBar 放置在左侧 */
-}
-QTabBar {/*只设置标签的表头*/
-    background-color:rgb(240, 240, 240) ; /* 设置背景颜色 */
-    color: white; /* 设置字体颜色 */
-	font: 12pt &quot;Microsoft YaHei UI&quot;;
-}
-
-QTabBar::tab {
-	transform: rotate(0deg); /* 确保文字水平 */
-    background-color:rgb(221, 221, 221) ;/* 设置每个标签的背景颜色 */
-    padding: 8px; /* 标签内边距 */
-
-}
-
-QTabBar::tab:selected {
-	background-color: rgb(64, 65, 66);
-    color: white; /* 选中标签的字体颜色 */
-  	border-radius: 18px; /* 设置选中标签的圆角边缘 */
-}
-
+       <string notr="true">
 </string>
       </property>
       <property name="tabPosition">
