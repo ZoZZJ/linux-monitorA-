@@ -22,26 +22,27 @@ contains(QMAKE_HOST.arch, aarch64){
 #aarch64 是编译器类型，如果不是这个编译器， 可以把.arch 替换成对应的类型
 #arm 64平台
 
-#    LIBS += -L/usr/lib/aarch64-linux-gnu/ \
-#            -lopencv_core \
-#            -lopencv_imgproc \
-#            -lopencv_imgcodecs \
-#            -lopencv_highgui \
-#            -lopencv_objdetect \
-#            -lopencv_features2d \
-#            -lopencv_videoio \
-#            -lopencv_ml \
-#            -lopencv_video \
-#            -lopencv_flann \
-#            -lopencv_photo \
-    LIBS +=  -L/home/jetson/Monitor-Linux-monitor/libmodbus/lib -lmodbus
-    LIBS +=  -L/usr/lib/ -lgxiapi \
 
-    INCLUDEPATH += /usr/include/opencv4
-    INCLUDEPATH += /usr/include/opencv4/opencv2
-    INCLUDEPATH += /usr/include
-    INCLUDEPATH += /home/jetson/Monitor-Linux-monitor/libmodbus/include/modbus
-    INCLUDEPATH += GxViewer/include/
+    LIBS +=  -L/home/jetson/Monitor-Linux-monitor/libmodbus/lib -lmodbus
+    LIBS += -L/usr/lib/aarch64-linux-gnu -lnvinfer
+    LIBS += -L/usr/lib/ -lgxiapi \
+             -L/usr/local/cuda/lib64 -lcudart \
+             -L/usr/lib/aarch64-linux-gnu -lnvinfer \
+             -lcublas -lcudnn \
+             -L/usr/lib/aarch64-linux-gnu -lopencv_core -lopencv_imgproc -lopencv_highgui
+
+    INCLUDEPATH += /usr/local/cuda/include \
+                   /usr/include/opencv4 \
+                   /usr/include/opencv4/opencv2 \
+                   /usr/include \
+                   /home/jetson/Monitor-Linux-monitor/libmodbus/include/modbus \
+                   GxViewer/include/ \
+                   /usr/include/aarch64-linux-gnu \
+                   /usr/include/eigen3 \
+                   /usr/local/include/onnxruntime \
+                   /usr/local/include/protobuf \
+                   /usr/include/jsoncpp
+
 
 
 message(": arm-64")
@@ -89,6 +90,8 @@ SOURCES += \
     MyWidgets/custabbar.cpp \
     MyWidgets/doubleclicklabel.cpp \
     MyWidgets/myslider.cpp \
+    NeuralNetThread/InferenceProcessor.cpp \
+    NeuralNetThread/TensorRTClassifier.cpp \
     PlotThread.cpp \
     cameracapturethread.cpp \
     main.cpp \
@@ -116,6 +119,8 @@ HEADERS += \
     MyWidgets/custabbar.h \
     MyWidgets/doubleclicklabel.h \
     MyWidgets/myslider.h \
+    NeuralNetThread/InferenceProcessor.h \
+    NeuralNetThread/TensorRTClassifier.h \
     PlotThread.h \
     cameracapturethread.h \
     control_interface.h \
