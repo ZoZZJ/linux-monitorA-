@@ -63,9 +63,14 @@ private slots:
 
     void saveToFile();
 
-    void InfereceMessage(QString currentTime,QString classification,QString platformStrategy);
-
     void onVisionTimerTimeout();
+
+    void dealClsResult(int result);
+
+
+    void updateImageWithLabel(const QString &classification);
+
+
 
     //工业相机专用槽函数
    // void EnqueueOnePicture();
@@ -77,10 +82,12 @@ signals:
     void newFrameCaptured(const QImage &frame);
     void udpStopSignal();
     void ProcessToggling(bool switch1);
+    void sendControlCommand(int result);    // 发送控制命令
+    void updateUIWithResult(QString classification); // 低频更新 UI
 
 
 private:
-
+    void setupInferenceProcessor();
     //void mouseDoubleClickEvent(QMouseEvent *event) override;
     //控件-----------------------------------------------------------------------------------------
     ImageDockWidget *ImDockWidget; // 自定义的 Dock Widget
@@ -110,9 +117,6 @@ private:
     DataProcessingThread *DataProThread;//声发射数据处理线程
 
 
-
-
-
     PlotThread *AePlotThread;//声发射绘图线程
     QThread* AeUdpReciveThread;//声发射udp接收线程
     UdpServer* udpServer;
@@ -120,6 +124,7 @@ private:
     bool cameraOn = false;
     bool AeON = false;
     bool AeProcessON = false;
+
     //int Camera_timerId;
 
     //创建定时器

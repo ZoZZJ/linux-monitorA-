@@ -13,6 +13,6 @@
         <file>photos/RightArrow.png</file>
         <file>photos/UpArrow.png</file>
         <file>photos/FastMove.png</file>
-        <file>photos/icon1.bmp</file>
+        <file>photos/icon1.png</file>
     </qresource>
 </RCC>

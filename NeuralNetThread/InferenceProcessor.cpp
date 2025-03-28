@@ -1,50 +1,68 @@
 #include "InferenceProcessor.h"
-#include <QDebug>
-
-InferenceProcessor::InferenceProcessor(TensorRTClassifier* classifier, CircularQueue<QPixmap>* queue)
-    : m_classifier(classifier), m_queue(queue), m_isProcessing(false)
-{
+#include <chrono>
+#include <thread>
+#include <iostream>
+//使用前必须制定推理引擎地址以及队列指针
+InferenceProcessor& InferenceProcessor::getInstance() {
+    static InferenceProcessor instance;
+    return instance;
 }
 
-void InferenceProcessor::startProcessing()
-{
-    if (m_isProcessing) return;  // 防止重复启动
-    m_isProcessing = true;
+InferenceProcessor::InferenceProcessor(QObject *parent)
+    : QObject(parent), m_classifier(new TensorRTClassifier("/home/jetson/Model_pth/resnet18_model_fp16.engine")), m_queue(nullptr), m_isProcessing(false) {
 
-    // 启动线程，进行推理处理
-    m_processingThread = std::thread(&InferenceProcessor::process, this);
-    m_processingThread.detach();  // 让线程在后台运行
+    m_classifier->testImage();
 }
 
-void InferenceProcessor::stopProcessing()
-{
-    m_isProcessing = false;  // 设置为停止状态
-    if (m_processingThread.joinable()) {
-        m_processingThread.join();  // 等待线程结束
+InferenceProcessor::~InferenceProcessor() {
+    stopProcessing();
+    if (m_classifier) {
+        delete m_classifier;
+        m_classifier = nullptr;
     }
 }
 
-bool InferenceProcessor::isProcessing() const
-{
-    return m_isProcessing;
+void InferenceProcessor::setEnginePath(const std::string &path) {
+    if (m_classifier) {
+        delete m_classifier;
+    }
+    m_classifier = new TensorRTClassifier(path);
 }
 
-void InferenceProcessor::process()
-{
+void InferenceProcessor::setQueue(CircularQueue<QPixmap> *queue) {
+    m_queue = queue;
+}
+
+void InferenceProcessor::startProcessing() {
+    if (!m_classifier || !m_queue) {
+        emit sendMessage("Error: Classifier or queue not set.");
+        return;
+    }
+    if (m_isProcessing) return;
+
+    m_isProcessing = true;
+    m_thread = std::thread(&InferenceProcessor::process, this);
+}
+
+void InferenceProcessor::stopProcessing() {
+    m_isProcessing = false;
+    if (m_thread.joinable()) {
+        m_thread.join();
+    }
+}
+
+void InferenceProcessor::process() {
     while (m_isProcessing) {
-        if (!m_queue->isEmpty()) {
+        if (m_queue && !m_queue->isEmpty()) {
 
             auto start = std::chrono::high_resolution_clock::now();
-            int classIndex = m_classifier->predict(m_queue->dequeue());  // 进行推理
+            int classIndex = m_classifier->predict(m_queue->dequeue());
             auto end = std::chrono::high_resolution_clock::now();
             std::chrono::duration<float> duration = end - start;
 
-
-            sendMessage("Inference time: " + QString::number(duration.count()) + " seconds");
-
-
-            emit classificationResult(classIndex);  // 发射推理结果信号
+            emit classificationResult(classIndex);
+            emit sendMessage(QString("Inference time: %1 seconds").arg(duration.count()));
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));  // 短暂休眠，避免占用过多 CPU
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }

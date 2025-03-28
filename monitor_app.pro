@@ -29,7 +29,7 @@ contains(QMAKE_HOST.arch, aarch64){
              -L/usr/local/cuda/lib64 -lcudart \
              -L/usr/lib/aarch64-linux-gnu -lnvinfer \
              -lcublas -lcudnn \
-             -L/usr/lib/aarch64-linux-gnu -lopencv_core -lopencv_imgproc -lopencv_highgui
+             -L/usr/lib/aarch64-linux-gnu -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs
 
     INCLUDEPATH += /usr/local/cuda/include \
                    /usr/include/opencv4 \

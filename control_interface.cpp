@@ -1,5 +1,6 @@
 #include "control_interface.h"
 #include "ui_control_interface.h"
+#include "NeuralNetThread/InferenceProcessor.h"
 #include <QImage>
 #include <QPainter>
 #include <QDebug>
@@ -27,10 +28,7 @@ control_interface::control_interface(QWidget *parent): QMainWindow(parent),
     qDebug()<<"创建主界面。。。";
     //控件部分-------------------------------------------------------------------------------------------------------
     //控件部分-------------------------------------------------------------------------------------------------------
-    for(int i=0;i<5;i++) InfereceMessage("","右偏","");
-    for(int i=0;i<7;i++) InfereceMessage("","未偏","");
-    for(int i=0;i<5;i++) InfereceMessage("","左偏","");
-    // setupStatusBar();
+
     MainUi->CameraToolButton->setDefaultAction(MainUi->CameraAction);
     MainUi->XYtoolButton->setDefaultAction(MainUi->actionXY);
 
@@ -114,8 +112,11 @@ control_interface::control_interface(QWidget *parent): QMainWindow(parent),
     // 控制按钮
     //qDebug()<<"step2。。。";
     //启动视觉ui更新定时器
-    m_VisionTimer.start(50);
-    qDebug() << "m_VisionTimer started? " << m_VisionTimer.isActive();
+   // m_VisionTimer.start(50);
+   // qDebug() << "m_VisionTimer started? " << m_VisionTimer.isActive();
+
+
+    setupInferenceProcessor();
 
 }
 
@@ -135,7 +136,7 @@ void control_interface::onVisionTimerTimeout()
     //qDebug()<<"videoQueue.size():"<<videoQueue.size()<<endl;
     if (!videoQueue.isEmpty()) {
         //更新为最近的一张图片
-        QPixmap pixmap = videoQueue[videoQueue.size()-1]; // 出队//
+        QPixmap pixmap = videoQueue[videoQueue.size()-1];
         //qDebug()<<"加载图形至ui......";
         QSize labelSize = MainUi->Visonlabel->size();
 
@@ -144,7 +145,7 @@ void control_interface::onVisionTimerTimeout()
 
         // 设置调整后的 Pixmap
         MainUi->Visonlabel->setPixmap(scaledPixmap);
-        MainUi->RealTImagelabel->setPixmap(scaledPixmap);
+       // MainUi->RealTImagelabel->setPixmap(scaledPixmap);
     }
 }
 
@@ -315,16 +316,18 @@ void control_interface::on_MsgClrButton_clicked()
 
 void control_interface::on_ModelSelectButton_clicked()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, tr("选择模型文件"), "", tr("模型文件 (*.onnx *.pb *.trt)"));
+    QString filePath = QFileDialog::getOpenFileName(this, tr("选择模型文件"), "", tr("模型文件 (*.onnx *.pb *.trt *.engine)"));
 
     if (!filePath.isEmpty()) {
-        // 这里你可以处理选中的模型文件路径
-        QMessageBox::information(this, tr("选择的模型文件"), filePath);
-        // 例如，你可以将路径传递给模型加载函数
-        //loadModel(filePath);//在这里实现加载模型的逻辑
-        MainUi->modelPathLineEdit->setText(filePath);  // 将路径显示到 QLineEdit
-    } // 如果用户选择了文件，则将路径设置到 QLineEdit
 
+        QMessageBox::information(this, tr("选择的模型文件"), filePath);
+
+        InferenceProcessor &processor = InferenceProcessor::getInstance();
+
+
+        processor.setEnginePath(filePath.toStdString());
+        MainUi->modelPathLineEdit->setText(filePath);
+    }
 }
 
 
@@ -421,25 +424,51 @@ void control_interface::saveToFile() {
 }
 
 
-void control_interface::InfereceMessage(QString currentTime,QString classification,QString platformStrategy) {
-    // 获取当前时间
-    // 获取当前日期时间
+void control_interface::dealClsResult(int result) {
+
     QDateTime currentDateTime = QDateTime::currentDateTime();
-
-    // 减去一个月
     QDateTime newDateTime = currentDateTime.addMonths(-1);
+    QString  currentTime = newDateTime.toString("MM-dd HH:mm:ss");
 
-    // 转换为字符串格式
-    currentTime = newDateTime.toString("MM-dd HH:mm:ss");
-    currentTime = "";
-    platformStrategy = "  "; // 这里可以替换为实际的移动策略
+    // 解析分类结果
+    QString classification;
+    switch (result) {
+        case 0: classification = "未偏移"; break;
+        case 1: classification = "左偏移"; break;
+        case 2: classification = "右偏移"; break;
+        default: classification = "未知"; break;
+    }
 
-    // 向表格中添加一行数据
-    int row =  MainUi-> InfereceTableWidget-> rowCount();
-     MainUi->InfereceTableWidget->insertRow(row);  // 插入新的一行
-    MainUi->InfereceTableWidget->setItem(row, 0, new QTableWidgetItem(currentTime));
-    MainUi->InfereceTableWidget->setItem(row, 1, new QTableWidgetItem(classification));
-    MainUi->InfereceTableWidget->setItem(row, 2, new QTableWidgetItem(platformStrategy));
+    emit sendControlCommand(result);
+
+
+//    static int lastResult = -1;
+//    if (result != lastResult) {
+//        lastResult = result;
+//        emit updateUIWithResult(classification);  // 触发 UI 更新
+//    }
+      emit updateUIWithResult(classification);  // 触发 UI 更新
+}
+
+void control_interface::updateImageWithLabel(const QString &classification) {
+    if (MainUi->RealTImagelabel->pixmap() == nullptr) return;
+
+    QPixmap pixmap = *MainUi->RealTImagelabel->pixmap();
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    QFont font;
+    font.setBold(true);
+    font.setPointSize(16);
+    painter.setFont(font);
+    painter.setPen(Qt::red);
+
+    int padding = 10;
+    QRect textRect(padding, padding, pixmap.width() - 2 * padding, 40);
+    painter.drawText(textRect, Qt::AlignRight | Qt::AlignTop, classification);
+
+    painter.end();
+    MainUi->RealTImagelabel->setPixmap(pixmap);
 }
 
 
@@ -466,4 +495,19 @@ void control_interface::on_XYtoolButton_triggered(QAction *arg1)
 {
 
 }
+
+void control_interface::setupInferenceProcessor() {
+
+    InferenceProcessor &processor = InferenceProcessor::getInstance();
+
+
+    //processor.setEnginePath("/home/jetson/Model_pth/resnet18_model_fp16.engine");
+
+    processor.setQueue(&videoQueue);
+
+    connect(&processor, &InferenceProcessor::sendMessage, this, &control_interface::addMessage);
+    connect(&processor, &InferenceProcessor::classificationResult, this, &control_interface::dealClsResult);
+}
+
+
 

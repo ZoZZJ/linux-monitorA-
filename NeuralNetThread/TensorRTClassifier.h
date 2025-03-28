@@ -30,6 +30,8 @@ public:
     int predict(const QImage &image);    // 输入 QImage
     int predict(const QPixmap &pixmap);  // 输入 QPixmap
 
+    void testImage(const std::string &imagePath = "/home/jetson/Monitor-Linux-monitor0306/zuopianyi.bmp");  // ➕ 测试函数
+
 private:
     void preprocessImage(const cv::Mat &image, float *gpuInputBuffer);
     void infer();

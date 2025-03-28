@@ -17,7 +17,7 @@
    <string notr="true">background-color: rgb(64, 65, 66);
 background-color: rgb(240, 240, 240);</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_14">
+  <layout class="QHBoxLayout" name="horizontalLayout_19">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="6,5">
      <item>
@@ -143,6 +143,9 @@ background-color: rgb(240, 240, 240);</string>
                   </item>
                   <item>
                    <spacer name="horizontalSpacer">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
                     <property name="sizeHint" stdset="0">
                      <size>
                       <width>40</width>
@@ -234,6 +237,9 @@ background-color: rgb(240, 240, 240);</string>
                   </item>
                   <item>
                    <spacer name="horizontalSpacer_2">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
                     <property name="sizeHint" stdset="0">
                      <size>
                       <width>40</width>
@@ -377,6 +383,9 @@ background-color: rgb(240, 240, 240);</string>
                   </item>
                   <item>
                    <spacer name="horizontalSpacer_3">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
                     <property name="sizeHint" stdset="0">
                      <size>
                       <width>40</width>
@@ -490,6 +499,9 @@ background-color: rgb(240, 240, 240);</string>
                   </item>
                   <item>
                    <spacer name="horizontalSpacer_4">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
                     <property name="sizeHint" stdset="0">
                      <size>
                       <width>40</width>
@@ -745,6 +757,9 @@ background-color: rgb(240, 240, 240);</string>
                  <layout class="QVBoxLayout" name="verticalLayout">
                   <item>
                    <spacer name="verticalSpacer">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
                     <property name="sizeType">
                      <enum>QSizePolicy::Fixed</enum>
                     </property>

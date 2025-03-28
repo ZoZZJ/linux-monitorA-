@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
+#include <opencv2/opencv.hpp>
 #include <algorithm> // std::max_element
 
 // 定义全局 Logger
@@ -26,6 +27,7 @@ TensorRTClassifier::TensorRTClassifier(const std::string &enginePath) {
     nvinfer1::IRuntime *runtime = nvinfer1::createInferRuntime(gLogger);
     engine = runtime->deserializeCudaEngine(engineData.data(), size, nullptr);
     context = engine->createExecutionContext();
+
 
     // 获取输入输出形状
     auto inputDims = engine->getBindingDimensions(0);
@@ -87,4 +89,23 @@ int TensorRTClassifier::predict(const QImage &image) {
 
 int TensorRTClassifier::predict(const QPixmap &pixmap) {
     return predict(pixmap.toImage());
+}
+
+
+void TensorRTClassifier::testImage(const std::string &imagePath) {
+    cv::Mat image = cv::imread(imagePath);
+    if (image.empty()) {
+        std::cerr << "❌ 无法读取图片：" << imagePath << std::endl;
+        return;
+    }
+
+    // ⏳ 计算推理时间
+    auto start = std::chrono::high_resolution_clock::now();
+    int classIndex = predict(image);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> duration = end - start;
+
+    std::cout << "✅ 图片: " << imagePath
+              << " | 分类结果: " << classIndex
+              << " | 推理时间: " << duration.count() << " 秒" << std::endl;
 }

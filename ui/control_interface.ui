@@ -985,7 +985,7 @@ font: 14pt &quot;黑体&quot;;</string>
                      </sizepolicy>
                     </property>
                     <property name="text">
-                     <string>/home/ZoZZ/models/res18_Modified.onnx</string>
+                     <string>/home/jetson/Model_pth/resnet18_model_fp16.engine</string>
                     </property>
                     <property name="readOnly">
                      <bool>true</bool>

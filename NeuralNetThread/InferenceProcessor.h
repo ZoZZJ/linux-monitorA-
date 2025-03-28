@@ -2,45 +2,40 @@
 #define INFERENCEPROCESSOR_H
 
 #include <QObject>
-#include <thread>
+#include <QThread>
+#include <QString>
+#include <opencv2/opencv.hpp>
 #include "TensorRTClassifier.h"
 #include "CircularQueue.h"
 
-class InferenceProcessor : public QObject
-{
+class InferenceProcessor : public QObject {
     Q_OBJECT
 
 public:
+    static InferenceProcessor& getInstance();  // 获取单例
 
-    InferenceProcessor(TensorRTClassifier* classifier, CircularQueue<QPixmap>* queue);
-
-
-    void startProcessing();
-
-
-    void stopProcessing();
-
-
-    bool isProcessing() const;
-
-
+    void setEnginePath(const std::string &path);  // 设置模型路径
+    void setQueue(CircularQueue<QPixmap> *queue); // 设置队列指针
+    void startProcessing();  // 开始处理
+    void stopProcessing();   // 停止处理
 
 signals:
-
-    void classificationResult(int classIndex);
-    void sendMessage(const QString &message);
-
+    void classificationResult(int result);
+    void sendMessage(const QString &message); // 发送消息
 
 private:
+    explicit InferenceProcessor(QObject *parent = nullptr);
+    ~InferenceProcessor();
 
-    void process();
+    InferenceProcessor(const InferenceProcessor&) = delete;
+    InferenceProcessor& operator=(const InferenceProcessor&) = delete;
 
-private:
-    TensorRTClassifier* m_classifier;      // 推理分类器对象
-    //后续优化性能的话换成cv：mat
-    CircularQueue<QPixmap>* m_queue;       // 图像队列
-    bool m_isProcessing;                   // 是否正在处理
-    std::thread m_processingThread;        // 处理线程
+    void process();  // 线程执行的主循环
+
+    TensorRTClassifier *m_classifier;
+    CircularQueue<QPixmap> *m_queue;
+    std::atomic<bool> m_isProcessing;
+    std::thread m_thread;
 };
 
 #endif // INFERENCEPROCESSOR_H
