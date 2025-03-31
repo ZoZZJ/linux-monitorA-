@@ -78,6 +78,8 @@ private slots:
 
     void on_XYtoolButton_triggered(QAction *arg1);
 
+    void on_InferenceButton_clicked();
+
 signals:
     void newFrameCaptured(const QImage &frame);
     void udpStopSignal();

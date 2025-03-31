@@ -42,6 +42,7 @@ control_interface::control_interface(QWidget *parent): QMainWindow(parent),
     MainUi->AeLabel->setScaledContents(true);//图像根据widget的大小缩放
     MainUi->AeProcessoLabel->setScaledContents(true);
     MainUi->Visonlabel->setScaledContents(true);
+    MainUi->RealTImagelabel->setScaledContents(true);//图像根据widget的大小缩放
 
     connect(MainUi->Visonlabel, &DoubleClickLabel::doubleClicked, this, [=]() {
         MainUi->MonitorTab->setCurrentIndex(3);
@@ -133,20 +134,17 @@ control_interface::~control_interface()
 void control_interface::onVisionTimerTimeout()
 {
 
-    //qDebug()<<"videoQueue.size():"<<videoQueue.size()<<endl;
     if (!videoQueue.isEmpty()) {
         //更新为最近的一张图片
         QPixmap pixmap = videoQueue[videoQueue.size()-1];
-        //qDebug()<<"加载图形至ui......";
+
         QSize labelSize = MainUi->Visonlabel->size();
-
-        // 调整 Pixmap 大小，保持比例 & 适应 QLabel
-        QPixmap scaledPixmap = pixmap.scaled(labelSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
+        QPixmap scaledPixmap = pixmap.scaled(labelSize, Qt::KeepAspectRatioByExpanding);
         // 设置调整后的 Pixmap
         MainUi->Visonlabel->setPixmap(scaledPixmap);
-       // MainUi->RealTImagelabel->setPixmap(scaledPixmap);
     }
+    //QPixmap pixmap("/home/jetson/Monitor-Linux-monitor0306/zuopianyi.bmp");
+    //videoQueue.enqueue(pixmap);
 }
 
 //void control_interface::EnqueueOnePicture(){
@@ -173,8 +171,10 @@ void control_interface::on_VideoButton_clicked()
     if (cameraOn) {
         // 停止线程
         if (cameraThread->isRunning()) {
+            m_VisionTimer.stop();
             cameraThread->requestInterruption(); // 请求中断
             cameraThread->wait(); // 等待线程执行完
+
         }
         CGxViewer::getInstance().StopAcquisition_clicked_slot();
         //killTimer(Camera_timerId);
@@ -187,6 +187,7 @@ void control_interface::on_VideoButton_clicked()
         if (!cameraThread->isRunning()) {
 
             cameraThread->start(); // 启动线程
+            m_VisionTimer.start(50);
             //Camera_timerId = startTimer(60);
         }
         CGxViewer::getInstance().StartAcquisition_clicked_slot();
@@ -440,20 +441,23 @@ void control_interface::dealClsResult(int result) {
     }
 
     emit sendControlCommand(result);
+    static int lastResult = -1;
+    if (result != lastResult) {
+        lastResult = result;
+         updateImageWithLabel(classification);  // 触发 UI 更新
+    }
 
-
-//    static int lastResult = -1;
-//    if (result != lastResult) {
-//        lastResult = result;
-//        emit updateUIWithResult(classification);  // 触发 UI 更新
-//    }
-      emit updateUIWithResult(classification);  // 触发 UI 更新
+    int row =  MainUi-> InfereceTableWidget-> rowCount();
+    MainUi->InfereceTableWidget->insertRow(row);  // 插入新的一行
+    MainUi->InfereceTableWidget->setItem(row, 0, new QTableWidgetItem(currentTime));
+    MainUi->InfereceTableWidget->setItem(row, 1, new QTableWidgetItem(classification));
+    //MainUi->InfereceTableWidget->setItem(row, 2, new QTableWidgetItem(platformStrategy));
 }
 
 void control_interface::updateImageWithLabel(const QString &classification) {
-    if (MainUi->RealTImagelabel->pixmap() == nullptr) return;
+    if (MainUi->Visonlabel->pixmap() == nullptr) return;
 
-    QPixmap pixmap = *MainUi->RealTImagelabel->pixmap();
+    QPixmap pixmap = *MainUi->Visonlabel->pixmap();
     QPainter painter(&pixmap);
     painter.setRenderHint(QPainter::Antialiasing);
 
@@ -469,6 +473,7 @@ void control_interface::updateImageWithLabel(const QString &classification) {
 
     painter.end();
     MainUi->RealTImagelabel->setPixmap(pixmap);
+
 }
 
 
@@ -511,3 +516,16 @@ void control_interface::setupInferenceProcessor() {
 
 
 
+
+void control_interface::on_InferenceButton_clicked()
+{
+     InferenceProcessor &processor = InferenceProcessor::getInstance();
+     if(!processor.getProcessingStatus()){
+         processor.startProcessing();
+          MainUi->InferenceButton->setText("停止推理");
+     }else{
+         processor.stopProcessing();
+          MainUi->InferenceButton->setText("开始推理");
+     }
+
+}

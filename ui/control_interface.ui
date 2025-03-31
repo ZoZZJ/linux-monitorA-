@@ -186,8 +186,8 @@
                       </property>
                       <property name="maximumSize">
                        <size>
-                        <width>2800</width>
-                        <height>1800</height>
+                        <width>400</width>
+                        <height>200</height>
                        </size>
                       </property>
                       <property name="styleSheet">
@@ -216,8 +216,8 @@ border-color: rgb(118, 118, 0);</string>
                       </property>
                       <property name="maximumSize">
                        <size>
-                        <width>2800</width>
-                        <height>1800</height>
+                        <width>400</width>
+                        <height>200</height>
                        </size>
                       </property>
                       <property name="styleSheet">
@@ -246,8 +246,8 @@ border-color: rgb(118, 118, 0);</string>
                       </property>
                       <property name="maximumSize">
                        <size>
-                        <width>2800</width>
-                        <height>1800</height>
+                        <width>400</width>
+                        <height>200</height>
                        </size>
                       </property>
                       <property name="autoFillBackground">
@@ -270,7 +270,7 @@ border-color: rgb(118, 118, 0);</string>
                     <item>
                      <widget class="QLabel" name="RealTImagelabel">
                       <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                         <horstretch>0</horstretch>
                         <verstretch>0</verstretch>
                        </sizepolicy>
@@ -283,8 +283,8 @@ border-color: rgb(118, 118, 0);</string>
                       </property>
                       <property name="maximumSize">
                        <size>
-                        <width>99999</width>
-                        <height>999999</height>
+                        <width>1200</width>
+                        <height>900</height>
                        </size>
                       </property>
                       <property name="layoutDirection">

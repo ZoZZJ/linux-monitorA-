@@ -18,6 +18,7 @@ public:
     void setQueue(CircularQueue<QPixmap> *queue); // 设置队列指针
     void startProcessing();  // 开始处理
     void stopProcessing();   // 停止处理
+    const bool getProcessingStatus(){return m_isProcessing;}
 
 signals:
     void classificationResult(int result);
