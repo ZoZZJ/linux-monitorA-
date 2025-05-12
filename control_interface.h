@@ -65,7 +65,7 @@ private slots:
 
     void onVisionTimerTimeout();
 
-    void dealClsResult(int result);
+    void dealClsResult(std::pair<int, float> classIndex_confidence);
 
 
     void updateImageWithLabel(const QString &classification);
@@ -84,7 +84,7 @@ signals:
     void newFrameCaptured(const QImage &frame);
     void udpStopSignal();
     void ProcessToggling(bool switch1);
-    void sendControlCommand(int result);    // 发送控制命令
+    void sendControlCommand(std::pair<int, float> classIndex_confidence);    // 发送控制命令
     void updateUIWithResult(QString classification); // 低频更新 UI
 
 
@@ -106,8 +106,6 @@ private:
     bool IsFullScreen = false;
     //VideoCapture cap;
 
-
-
     CircularQueue<QPixmap> videoQueue;
     std::vector<float> g_ProcessedAeData;
     CircularQueue<float> AeRxQueue;//声发射接收队列
@@ -126,7 +124,7 @@ private:
     bool cameraOn = false;
     bool AeON = false;
     bool AeProcessON = false;
-
+    float ConfidenceThreshold = 0.50;
     //int Camera_timerId;
 
     //创建定时器

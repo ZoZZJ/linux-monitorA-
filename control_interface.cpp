@@ -65,8 +65,6 @@ control_interface::control_interface(QWidget *parent): QMainWindow(parent),
 
     //Tab放在左侧：
     MainUi->MonitorTab->setTabPosition(QTabWidget::West);
-
-
     //线程部分----------------------------------------------------------------------------------------------------------------
     //线程部分----------------------------------------------------------------------------------------------------------------
     cameraThread = new CameraCaptureThread(videoQueue, this);
@@ -113,7 +111,7 @@ control_interface::control_interface(QWidget *parent): QMainWindow(parent),
     // 控制按钮
     //qDebug()<<"step2。。。";
     //启动视觉ui更新定时器
-   // m_VisionTimer.start(50);
+    m_VisionTimer.start(50);
    // qDebug() << "m_VisionTimer started? " << m_VisionTimer.isActive();
 
 
@@ -143,8 +141,8 @@ void control_interface::onVisionTimerTimeout()
         // 设置调整后的 Pixmap
         MainUi->Visonlabel->setPixmap(scaledPixmap);
     }
-    //QPixmap pixmap("/home/jetson/Monitor-Linux-monitor0306/zuopianyi.bmp");
-    //videoQueue.enqueue(pixmap);
+    QPixmap pixmap("/home/jetson/Monitor-Linux-monitor0306/VisionDataset/Right/727.png");
+    videoQueue.enqueue(pixmap);
 }
 
 //void control_interface::EnqueueOnePicture(){
@@ -317,7 +315,7 @@ void control_interface::on_MsgClrButton_clicked()
 
 void control_interface::on_ModelSelectButton_clicked()
 {
-    QString filePath = QFileDialog::getOpenFileName(this, tr("选择模型文件"), "", tr("模型文件 (*.onnx *.pb *.trt *.engine)"));
+    QString filePath = QFileDialog::getOpenFileName(this, tr("选择模型文件"), "", tr("模型文件 (*.engine)"));
 
     if (!filePath.isEmpty()) {
 
@@ -328,6 +326,8 @@ void control_interface::on_ModelSelectButton_clicked()
 
         processor.setEnginePath(filePath.toStdString());
         MainUi->modelPathLineEdit->setText(filePath);
+        processor.setEnginePath(filePath.toStdString());
+
     }
 }
 
@@ -425,26 +425,37 @@ void control_interface::saveToFile() {
 }
 
 
-void control_interface::dealClsResult(int result) {
+void control_interface::dealClsResult(std::pair<int, float> classIndex_confidence) {
+    static int ShowImageCnt = 0;
+    static int lastClassIndex = -1;
+    ShowImageCnt++;
+    //发给平台移动步长控制器
+    emit sendControlCommand(classIndex_confidence);
+    auto [classIndex, confidence] = classIndex_confidence;
+
+    if(confidence<ConfidenceThreshold){
+        return;
+    }
 
     QDateTime currentDateTime = QDateTime::currentDateTime();
     QDateTime newDateTime = currentDateTime.addMonths(-1);
     QString  currentTime = newDateTime.toString("MM-dd HH:mm:ss");
-
     // 解析分类结果
+
     QString classification;
-    switch (result) {
-        case 0: classification = "未偏移"; break;
-        case 1: classification = "左偏移"; break;
+    switch (classIndex) {
+        case 0: classification = "左偏移"; break;
+        case 1: classification = "未偏移"; break;
         case 2: classification = "右偏移"; break;
         default: classification = "未知"; break;
     }
 
-    emit sendControlCommand(result);
-    static int lastResult = -1;
-    if (result != lastResult) {
-        lastResult = result;
-         updateImageWithLabel(classification);  // 触发 UI 更新
+    if (ShowImageCnt == 4) {
+        ShowImageCnt = 0;
+        if(classIndex != lastClassIndex){
+            lastClassIndex = classIndex;
+            updateImageWithLabel(classification);  // 触发 UI 更新
+        }
     }
 
     int row =  MainUi-> InfereceTableWidget-> rowCount();

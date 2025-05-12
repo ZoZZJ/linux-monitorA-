@@ -21,7 +21,7 @@ public:
     const bool getProcessingStatus(){return m_isProcessing;}
 
 signals:
-    void classificationResult(int result);
+    void classificationResult(std::pair<int, float> classIndex_conf);
     void sendMessage(const QString &message); // 发送消息
 
 private:

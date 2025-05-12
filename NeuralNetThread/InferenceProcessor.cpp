@@ -9,7 +9,7 @@ InferenceProcessor& InferenceProcessor::getInstance() {
 }
 
 InferenceProcessor::InferenceProcessor(QObject *parent)
-    : QObject(parent), m_classifier(new TensorRTClassifier("/home/jetson/Model_pth/resnet18_model_fp16.engine")), m_queue(nullptr), m_isProcessing(false) {
+    : QObject(parent), m_classifier(new TensorRTClassifier("/home/jetson/Model_pth/DirectionCNN_fp16.engine")), m_queue(nullptr), m_isProcessing(false) {
 
     m_classifier->testImage();
 }
@@ -56,11 +56,11 @@ void InferenceProcessor::process() {
         if (m_queue && !m_queue->isEmpty()) {
 
             auto start = std::chrono::high_resolution_clock::now();
-            int classIndex = m_classifier->predict(m_queue->dequeue());
+            std::pair<int, float> classIndex_confidence = m_classifier->predict(m_queue->dequeue());
             auto end = std::chrono::high_resolution_clock::now();
             std::chrono::duration<float> duration = end - start;
 
-            emit classificationResult(classIndex);
+            emit classificationResult(classIndex_confidence);
             emit sendMessage(QString("Inference time: %1 seconds").arg(duration.count()));
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
