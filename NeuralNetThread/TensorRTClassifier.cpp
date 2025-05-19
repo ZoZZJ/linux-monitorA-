@@ -103,7 +103,7 @@ void TensorRTClassifier::preprocessImage(const cv::Mat &image, float *gpuInputBu
 
 
 
-std::pair<int, float> TensorRTClassifier::predict(const cv::Mat &image) {
+QPair<int, float> TensorRTClassifier::predictMax(const cv::Mat &image) {
     preprocessImage(image, (float *)buffers[0]);
 
     // 推理
@@ -133,17 +133,61 @@ std::pair<int, float> TensorRTClassifier::predict(const cv::Mat &image) {
     return {classId, confidence};
 }
 
+// 1. 从 cv::Mat 输入
+Probabilities TensorRTClassifier::predictAll(const cv::Mat &image) {
+    preprocessImage(image, (float *)buffers[0]);
 
-std::pair<int, float> TensorRTClassifier::predict(const QImage &image) {
+    // 推理
+    context->enqueueV2(buffers, stream, nullptr);
+    cudaStreamSynchronize(stream);
+
+    // 获取输出结果
+    std::vector<float> output(num_classes);
+    cudaMemcpy(output.data(), buffers[1], num_classes * sizeof(float), cudaMemcpyDeviceToHost);
+
+    // softmax
+    float maxLogit = *std::max_element(output.begin(), output.end());
+    float sumExp = 0.0f;
+    for (auto &val : output) {
+        val = std::exp(val - maxLogit);
+        sumExp += val;
+    }
+    for (auto &val : output) {
+        val /= sumExp;
+    }
+
+    // 填入结构体
+    Probabilities probs;
+    probs.left = output[0];   // 假设索引 0 是 Left
+    probs.none = output[1];   // 假设索引 1 是 None
+    probs.right = output[2];  // 假设索引 2 是 Right
+    return probs;
+}
+
+// 2. 从 QImage 输入
+Probabilities TensorRTClassifier::predictAll(const QImage &image) {
+    cv::Mat mat = cv::Mat(image.height(), image.width(), CV_8UC3,
+                          (void *)image.bits(), image.bytesPerLine()).clone();
+    cv::cvtColor(mat, mat, cv::COLOR_RGB2BGR);
+    return predictAll(mat);
+}
+
+// 3. 从 QPixmap 输入
+Probabilities TensorRTClassifier::predictAll(const QPixmap &pixmap) {
+    return predictAll(pixmap.toImage());
+}
+
+
+QPair<int, float> TensorRTClassifier::predictMax(const QImage &image) {
     // 转换 QImage 到 cv::Mat
     cv::Mat mat = cv::Mat(image.height(), image.width(), CV_8UC3, (void *)image.bits(), image.bytesPerLine()).clone();
     cv::cvtColor(mat, mat, cv::COLOR_RGB2BGR);
 
-    return predict(mat);
+    return predictMax(mat);
 }
 
-std::pair<int, float> TensorRTClassifier::predict(const QPixmap &pixmap) {
-    return predict(pixmap.toImage());
+QPair<int, float> TensorRTClassifier::predictMax(const QPixmap &pixmap) {
+    return predictMax(pixmap.toImage());
 }
 
 
@@ -155,13 +199,14 @@ void TensorRTClassifier::testImage(const std::string &imagePath) {
     }
 
     auto start = std::chrono::high_resolution_clock::now();
-    auto [classIndex, confidence] = predict(image);
+    Probabilities probs = predictAll(image);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> duration = end - start;
 
     std::cout << "✅ 图片: " << imagePath
-              << " | 分类结果: " << classIndex
-              << " | 置信度: " << confidence
+              << " | Left: " << probs.left
+              << " | None: " << probs.none
+              << " | Right: " << probs.right
               << " | 推理时间: " << duration.count() << " 秒" << std::endl;
 }
 

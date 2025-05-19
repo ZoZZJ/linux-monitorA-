@@ -76,6 +76,8 @@ unix{
 SOURCES += \
     AxisManager/JPMASManager.cpp \
     AxisManager/PlatformController.cpp \
+    FuzzyController/FuzzyController.cpp \
+    FuzzyController/ProbabilityProvider.cpp \
     GxViewer/AcquisitionThread.cpp \
     GxViewer/Common.cpp \
     GxViewer/ExposureGain.cpp \
@@ -103,6 +105,8 @@ HEADERS += \
     AxisManager/JPMASManager.h \
     AxisManager/PlatformController.h \
     CircularQueue.h \
+    FuzzyController/FuzzyController.h \
+    FuzzyController/ProbabilityProvider.h \
     GxViewer/AcquisitionThread.h \
     GxViewer/Common.h \
     GxViewer/ExposureGain.h \
@@ -120,6 +124,7 @@ HEADERS += \
     MyWidgets/doubleclicklabel.h \
     MyWidgets/myslider.h \
     NeuralNetThread/InferenceProcessor.h \
+    NeuralNetThread/Probabilities.h \
     NeuralNetThread/TensorRTClassifier.h \
     PlotThread.h \
     cameracapturethread.h \

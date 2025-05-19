@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     //w.setWindowState(w.windowState() ^ Qt::WindowFullScreen);
 
     a.setWindowIcon(QIcon("qrc:/photos/icon1.png"));
-    w.setWindowTitle("激光加工实时校正系统");
+    w.setWindowTitle("激光加工实时校正平台");
 
    // w.showFullScreen();
     w.show();

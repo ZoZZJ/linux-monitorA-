@@ -17,9 +17,19 @@ class XyPlatform : public QWidget
 {
     Q_OBJECT
 
-public:
+private:
     explicit XyPlatform(QWidget *parent = nullptr);
     ~XyPlatform();
+
+    // **禁止拷贝构造和赋值**
+     XyPlatform(const XyPlatform&) = delete;
+     XyPlatform& operator=(const XyPlatform&) = delete;
+
+public:
+    static XyPlatform& getInstance() {
+         static XyPlatform instance;  // **C++11 及以后，线程安全的静态局部变量**
+         return instance;
+     }
 
 private:
 
@@ -31,9 +41,9 @@ private:
 private:
 
     bool platformEnabled = false;
-    PlatformController* controller; // 控制器实例
+    PlatformController* controller = nullptr; // 控制器实例
     int m_MoveType = 0; //0=步进 1=持续
-    QTimer* KeepMovingTimer;       // 用于长按按钮触发移动
+    QTimer* KeepMovingTimer= nullptr;       // 用于长按按钮触发移动
 
     void setupUI();          // 初始化UI
     void setupConnections(); // 绑定信号槽

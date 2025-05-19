@@ -1004,15 +1004,6 @@ font: 14pt &quot;黑体&quot;;</string>
         </item>
        </layout>
       </widget>
-      <widget class="XyPlatform" name="XyTab">
-       <attribute name="icon">
-        <iconset resource="../resources.qrc">
-         <normaloff>:/photos/XYplatform.png</normaloff>:/photos/XYplatform.png</iconset>
-       </attribute>
-       <attribute name="title">
-        <string notr="true"/>
-       </attribute>
-      </widget>
      </widget>
     </item>
    </layout>
@@ -1103,12 +1094,6 @@ font: 14pt &quot;黑体&quot;;</string>
    <class>MySlider</class>
    <extends>QSlider</extends>
    <header>myslider.h</header>
-  </customwidget>
-  <customwidget>
-   <class>XyPlatform</class>
-   <extends>QWidget</extends>
-   <header>xyplatform.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>DoubleClickLabel</class>

@@ -12,6 +12,28 @@
 #include "MyWidgets/doubleclicklabel.h"
 #include "GxViewer/GxViewer.h"
 #include "GxViewer/AcquisitionThread.h"
+#include "NeuralNetThread/Probabilities.h"
+#include "NeuralNetThread/InferenceProcessor.h"
+#include <QImage>
+#include <QPainter>
+#include <QDebug>
+#include <QJsonDocument>
+#include <QJsonParseError>
+#include <QJsonObject>
+#include <QVector>
+#include <QThread>
+#include <QFileDialog>
+#include <QPushButton>
+#include <QMessageBox>
+#include <QProcess>
+#include <QMouseEvent>
+#include <QTabWidget>
+#include "MyWidgets/custabbar.h"
+#include "MyWidgets/myslider.h"
+#include <QDateTime>
+#include "xyplatform.h"
+#include "FuzzyController/ProbabilityProvider.h"
+#include "FuzzyController/FuzzyController.h"
 
 using namespace cv;
 using namespace std;
@@ -65,8 +87,7 @@ private slots:
 
     void onVisionTimerTimeout();
 
-    void dealClsResult(std::pair<int, float> classIndex_confidence);
-
+    void dealClsResult(const Probabilities& probs);
 
     void updateImageWithLabel(const QString &classification);
 
@@ -84,7 +105,7 @@ signals:
     void newFrameCaptured(const QImage &frame);
     void udpStopSignal();
     void ProcessToggling(bool switch1);
-    void sendControlCommand(std::pair<int, float> classIndex_confidence);    // 发送控制命令
+    void sendControlCommand(QPair<int, float> classIndex_confidence);    // 发送控制命令
     void updateUIWithResult(QString classification); // 低频更新 UI
 
 
@@ -107,16 +128,20 @@ private:
     //VideoCapture cap;
 
     CircularQueue<QPixmap> videoQueue;
+
+
     std::vector<float> g_ProcessedAeData;
     CircularQueue<float> AeRxQueue;//声发射接收队列
 
     QByteArray savedGeometry;  // 保存的窗口位置和大小
 
     CameraCaptureThread *cameraThread;
+    FuzzyController *FController;
+    ProbabilityProvider* PProvider;
+
+
     SignalAcquisitionThread *AeRxThread;//声发射接收线程
     DataProcessingThread *DataProThread;//声发射数据处理线程
-
-
     PlotThread *AePlotThread;//声发射绘图线程
     QThread* AeUdpReciveThread;//声发射udp接收线程
     UdpServer* udpServer;
@@ -125,6 +150,7 @@ private:
     bool AeON = false;
     bool AeProcessON = false;
     float ConfidenceThreshold = 0.50;
+    bool FuzzyControllerOn = false;
     //int Camera_timerId;
 
     //创建定时器

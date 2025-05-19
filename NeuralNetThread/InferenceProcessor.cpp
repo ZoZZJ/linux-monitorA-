@@ -56,11 +56,13 @@ void InferenceProcessor::process() {
         if (m_queue && !m_queue->isEmpty()) {
 
             auto start = std::chrono::high_resolution_clock::now();
-            std::pair<int, float> classIndex_confidence = m_classifier->predict(m_queue->dequeue());
+            //QPair<int, float> classIndex_confidence = m_classifier->predictMax(m_queue->dequeue());
+            Probabilities probs = m_classifier->predictAll(m_queue->dequeue());
+
             auto end = std::chrono::high_resolution_clock::now();
             std::chrono::duration<float> duration = end - start;
 
-            emit classificationResult(classIndex_confidence);
+            emit classificationResult( probs);
             emit sendMessage(QString("Inference time: %1 seconds").arg(duration.count()));
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(10));

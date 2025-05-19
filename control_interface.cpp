@@ -1,29 +1,15 @@
 #include "control_interface.h"
 #include "ui_control_interface.h"
-#include "NeuralNetThread/InferenceProcessor.h"
-#include <QImage>
-#include <QPainter>
-#include <QDebug>
-#include <QJsonDocument>
-#include <QJsonParseError>
-#include <QJsonObject>
-#include <QVector>
-#include <QThread>
-#include <QFileDialog>
-#include <QPushButton>
-#include <QMessageBox>
-#include <QProcess>
-#include <QMouseEvent>
-#include <QTabWidget>
-#include "MyWidgets/custabbar.h"
-#include "MyWidgets/myslider.h"
-#include <QDateTime>
 
 
 //队列容量被初始化为100
 control_interface::control_interface(QWidget *parent): QMainWindow(parent),
-    MainUi(new Ui::control_interface),videoQueue(3),g_ProcessedAeData(3000),AeRxQueue(3000)
+    MainUi(new Ui::control_interface),videoQueue(3),g_ProcessedAeData(3000),AeRxQueue(3000),
+    PProvider(new ProbabilityProvider),FController(new FuzzyController(PProvider))
 {
+    qRegisterMetaType<QPair<int, float>>("QPair<int, float>");
+    qRegisterMetaType<Probabilities>("Probabilities");
+
     MainUi->setupUi(this);
     qDebug()<<"创建主界面。。。";
     //控件部分-------------------------------------------------------------------------------------------------------
@@ -87,6 +73,9 @@ control_interface::control_interface(QWidget *parent): QMainWindow(parent),
     int tabIndex = MainUi->MonitorTab->addTab(&CGxViewer::getInstance(), "");  // 添加单例对象
     MainUi->MonitorTab->setTabIcon(tabIndex,QIcon(":photos/camera.png"));
 
+    int tabIndex2 = MainUi->MonitorTab->addTab(&XyPlatform::getInstance(), "");  // 添加单例对象
+    MainUi->MonitorTab->setTabIcon(tabIndex2,QIcon(":photos/XYplatform.png"));
+
     connect(cameraThread, &CameraCaptureThread::messageSignal, this, &control_interface::addMessage);
     connect(cameraThread, &CameraCaptureThread::ImageSignal, this, &control_interface::LoadImageUI);
 
@@ -141,7 +130,7 @@ void control_interface::onVisionTimerTimeout()
         // 设置调整后的 Pixmap
         MainUi->Visonlabel->setPixmap(scaledPixmap);
     }
-    QPixmap pixmap("/home/jetson/Monitor-Linux-monitor0306/VisionDataset/Right/727.png");
+    QPixmap pixmap("/home/jetson/Monitor-Linux-monitor0306/VisionDataset/565.png");
     videoQueue.enqueue(pixmap);
 }
 
@@ -425,15 +414,25 @@ void control_interface::saveToFile() {
 }
 
 
-void control_interface::dealClsResult(std::pair<int, float> classIndex_confidence) {
+void control_interface::dealClsResult(const Probabilities& probs) {
     static int ShowImageCnt = 0;
     static int lastClassIndex = -1;
     ShowImageCnt++;
-    //发给平台移动步长控制器
-    emit sendControlCommand(classIndex_confidence);
-    auto [classIndex, confidence] = classIndex_confidence;
+    //发给平台移动步长控制器dy
+    PProvider->enqueueProbabilities(probs);
 
-    if(confidence<ConfidenceThreshold){
+    int classIndex = 0;
+    double maxProbs = probs.left;
+    if (probs.none > maxProbs) {
+        maxProbs = probs.none;
+        classIndex = 1;
+    }
+    if (probs.right > maxProbs) {
+        maxProbs = probs.right;
+        classIndex = 2;
+    }
+
+    if(maxProbs<ConfidenceThreshold){
         return;
     }
 

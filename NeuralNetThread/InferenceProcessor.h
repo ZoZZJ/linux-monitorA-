@@ -7,6 +7,7 @@
 #include <opencv2/opencv.hpp>
 #include "TensorRTClassifier.h"
 #include "CircularQueue.h"
+#include "Probabilities.h"
 
 class InferenceProcessor : public QObject {
     Q_OBJECT
@@ -21,7 +22,7 @@ public:
     const bool getProcessingStatus(){return m_isProcessing;}
 
 signals:
-    void classificationResult(std::pair<int, float> classIndex_conf);
+    void classificationResult(const Probabilities& probs);
     void sendMessage(const QString &message); // 发送消息
 
 private:

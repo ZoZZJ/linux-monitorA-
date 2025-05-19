@@ -7,6 +7,7 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <string>
+#include "Probabilities.h"
 
 // 创建 TensorRT 的 Logger
 class Logger : public nvinfer1::ILogger {
@@ -26,9 +27,13 @@ public:
     explicit TensorRTClassifier(const std::string &enginePath);
     ~TensorRTClassifier();
 
-    std::pair<int, float> predict(const cv::Mat &image);   // 输入 OpenCV Mat
-    std::pair<int, float> predict(const QImage &image);    // 输入 QImage
-    std::pair<int, float> predict(const QPixmap &pixmap);  // 输入 QPixmap
+    Probabilities predictAll(const cv::Mat& input);
+    Probabilities predictAll(const QImage &image);
+    Probabilities predictAll(const QPixmap &pixmap);
+
+    QPair<int, float> predictMax(const cv::Mat &image);   // 输入 OpenCV Mat
+    QPair<int, float> predictMax(const QImage &image);    // 输入 QImage
+    QPair<int, float> predictMax(const QPixmap &pixmap);  // 输入 QPixmap
 
     void testImage(const std::string &imagePath = "/home/jetson/Monitor-Linux-monitor0306/VisionDataset/Right/133.png");  // ➕ 测试函数
 
