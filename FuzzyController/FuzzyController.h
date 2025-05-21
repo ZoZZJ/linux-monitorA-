@@ -19,10 +19,11 @@ public:
     FuzzyController(ProbabilityProvider* probProvider,  QObject* parent = nullptr);
     void run() override;
     void stop();
+    bool GetRunningStatus() const ;
 
 private:
     QMutex mutex;
-    bool isRunning = false;
+    bool IsRunning = false;
     double previous_ot = 0.0;
     ProbabilityProvider* probProvider;
     XyPlatform* platform;

@@ -30,20 +30,13 @@ FuzzyController::FuzzyController(ProbabilityProvider* probProv, QObject* parent)
 }
 
 void FuzzyController::run() {
-    mutex.lock();
-    isRunning = true;
-    mutex.unlock();
-
-    while (true) {
-        mutex.lock();
-        if (!isRunning) {
-            mutex.unlock();
-            break;
-        }
-        mutex.unlock();
+    {
+        QMutexLocker locker(&mutex);
+        IsRunning = true;
+    }
+    while (!QThread::currentThread()->isInterruptionRequested()) {
         Probabilities probs;
         bool success = probProvider->getProbabilities(probs);
-
         if (!success) {
             QThread::msleep(40);
             continue;
@@ -53,17 +46,20 @@ void FuzzyController::run() {
         previous_ot = current_ot;
 
         double correction = computeCorrection(current_ot, dt);
-
-        //platform->applyCorrection(correction);
+        std::cout << "correction:" << correction << std::endl;
 
         QThread::msleep(40);
+    }
+    {
+        QMutexLocker locker(&mutex);
+        IsRunning = false;
     }
 }
 
 
 void FuzzyController::stop() {
     mutex.lock();
-    isRunning = false;
+    IsRunning = false;
     mutex.unlock();
     wait(); // Wait for thread to finish
 }
@@ -115,4 +111,8 @@ double FuzzyController::computeCorrection(double offset_tendency, double delta_t
     } else {
         return 0.0; // No correction if no rules fire
     }
+}
+
+bool FuzzyController::GetRunningStatus() const {
+    return IsRunning;
 }

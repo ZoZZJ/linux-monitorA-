@@ -101,6 +101,8 @@ private slots:
 
     void on_InferenceButton_clicked();
 
+    void on_XyPlatformButton_clicked();
+
 signals:
     void newFrameCaptured(const QImage &frame);
     void udpStopSignal();
@@ -136,8 +138,9 @@ private:
     QByteArray savedGeometry;  // 保存的窗口位置和大小
 
     CameraCaptureThread *cameraThread;
-    FuzzyController *FController;
     ProbabilityProvider* PProvider;
+    FuzzyController *FControllerThread;
+
 
 
     SignalAcquisitionThread *AeRxThread;//声发射接收线程

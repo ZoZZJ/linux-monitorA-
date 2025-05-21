@@ -5,7 +5,7 @@
 //队列容量被初始化为100
 control_interface::control_interface(QWidget *parent): QMainWindow(parent),
     MainUi(new Ui::control_interface),videoQueue(3),g_ProcessedAeData(3000),AeRxQueue(3000),
-    PProvider(new ProbabilityProvider),FController(new FuzzyController(PProvider))
+    PProvider(new ProbabilityProvider(this)),FControllerThread(new FuzzyController(PProvider,this))
 {
     qRegisterMetaType<QPair<int, float>>("QPair<int, float>");
     qRegisterMetaType<Probabilities>("Probabilities");
@@ -100,7 +100,7 @@ control_interface::control_interface(QWidget *parent): QMainWindow(parent),
     // 控制按钮
     //qDebug()<<"step2。。。";
     //启动视觉ui更新定时器
-    m_VisionTimer.start(50);
+    m_VisionTimer.start(25);
    // qDebug() << "m_VisionTimer started? " << m_VisionTimer.isActive();
 
 
@@ -120,7 +120,8 @@ control_interface::~control_interface()
 
 void control_interface::onVisionTimerTimeout()
 {
-
+    static int imageIndex = 1;  // 图片编号，从1开始
+    static int missingCount = 0;  // 图片编号，从1开始
     if (!videoQueue.isEmpty()) {
         //更新为最近的一张图片
         QPixmap pixmap = videoQueue[videoQueue.size()-1];
@@ -130,8 +131,21 @@ void control_interface::onVisionTimerTimeout()
         // 设置调整后的 Pixmap
         MainUi->Visonlabel->setPixmap(scaledPixmap);
     }
-    QPixmap pixmap("/home/jetson/Monitor-Linux-monitor0306/VisionDataset/565.png");
-    videoQueue.enqueue(pixmap);
+    QString imagePath = QString("/home/jetson/Monitor-Linux-monitor0306/VisionDataset/Left/%1.png").arg(imageIndex);
+    if (QFile::exists(imagePath)) {
+        QPixmap pixmap(imagePath);
+        videoQueue.enqueue(pixmap);
+        imageIndex++;  // 下一张图编号+1
+        missingCount = 0;  // 重置连续未找到计数
+    }
+    else {
+           missingCount++;    // 连续未找到计数加1
+
+           if (missingCount >= 20) {
+               imageIndex = 1;    // 超过20次未找到，重置索引
+               missingCount = 0;  // 重置计数
+           }
+       }
 }
 
 //void control_interface::EnqueueOnePicture(){
@@ -449,12 +463,12 @@ void control_interface::dealClsResult(const Probabilities& probs) {
         default: classification = "未知"; break;
     }
 
-    if (ShowImageCnt == 4) {
+    if (ShowImageCnt == 1) {
         ShowImageCnt = 0;
-        if(classIndex != lastClassIndex){
+        //if(classIndex != lastClassIndex){
             lastClassIndex = classIndex;
             updateImageWithLabel(classification);  // 触发 UI 更新
-        }
+       // }
     }
 
     int row =  MainUi-> InfereceTableWidget-> rowCount();
@@ -538,4 +552,28 @@ void control_interface::on_InferenceButton_clicked()
           MainUi->InferenceButton->setText("开始推理");
      }
 
+}
+
+void control_interface::on_XyPlatformButton_clicked()
+{
+
+    if (FControllerThread->GetRunningStatus()) {
+        // 停止线程
+        if (FControllerThread->isRunning()) {
+            //m_VisionTimer.stop();
+            FControllerThread->requestInterruption(); // 请求中断
+            FControllerThread->wait(); // 等待线程执行完
+        }
+        FuzzyControllerOn = false; // 更新相机状态
+        MainUi->XyPlatformButton->setText("开启平台运动");
+    } else {
+        // 如果线程已中断，直接复用现有线程
+        if (!FControllerThread->isRunning()) {
+            std::cout<<"1:"<<std::endl;
+            FControllerThread->start(); // 启动线程
+
+        }
+        MainUi->XyPlatformButton->setText("停止平台运动");
+        FuzzyControllerOn = true; //
+    }
 }
