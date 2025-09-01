@@ -31,6 +31,8 @@ public:
          return instance;
      }
 
+    void QuickCorrectionRelatively(float correction); //相对于当前位置快速移动多少
+
 private:
 
     Ui::XyPlatform *xyui;

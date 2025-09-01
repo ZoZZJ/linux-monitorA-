@@ -45,6 +45,12 @@ control_interface::control_interface(QWidget *parent): QMainWindow(parent),
 
         DockOn = visible;
     });
+
+    MainUi->AeProcessoLabel->hide();
+    MainUi->AeLabel->hide();
+    MainUi->AEProcButton->hide();
+    MainUi->AEButton->hide();
+
     //滑动条
     connect(MainUi->ConfidenceSlider, &MySlider::valueChanged, MainUi->spinBox, &QSpinBox::setValue);
     connect(MainUi->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), MainUi->ConfidenceSlider, &MySlider::setValue);
@@ -90,6 +96,10 @@ control_interface::control_interface(QWidget *parent): QMainWindow(parent),
     connect(&m_VisionTimer, &QTimer::timeout, this,  &control_interface::onVisionTimerTimeout);
 
 
+    connect(FControllerThread, &FuzzyController::SendCorrectionRelatively,
+            &XyPlatform::getInstance(),
+            &XyPlatform::QuickCorrectionRelatively,
+            Qt::QueuedConnection);
 
 
 ///控件部分
@@ -100,7 +110,7 @@ control_interface::control_interface(QWidget *parent): QMainWindow(parent),
     // 控制按钮
     //qDebug()<<"step2。。。";
     //启动视觉ui更新定时器
-    m_VisionTimer.start(25);
+    m_VisionTimer.start(20);
    // qDebug() << "m_VisionTimer started? " << m_VisionTimer.isActive();
 
 
@@ -463,7 +473,7 @@ void control_interface::dealClsResult(const Probabilities& probs) {
         default: classification = "未知"; break;
     }
 
-    if (ShowImageCnt == 1) {
+    if (ShowImageCnt == 2) {
         ShowImageCnt = 0;
         //if(classIndex != lastClassIndex){
             lastClassIndex = classIndex;
@@ -475,30 +485,51 @@ void control_interface::dealClsResult(const Probabilities& probs) {
     MainUi->InfereceTableWidget->insertRow(row);  // 插入新的一行
     MainUi->InfereceTableWidget->setItem(row, 0, new QTableWidgetItem(currentTime));
     MainUi->InfereceTableWidget->setItem(row, 1, new QTableWidgetItem(classification));
+    MainUi->InfereceTableWidget->scrollToBottom();
     //MainUi->InfereceTableWidget->setItem(row, 2, new QTableWidgetItem(platformStrategy));
 }
 
 void control_interface::updateImageWithLabel(const QString &classification) {
-    if (MainUi->Visonlabel->pixmap() == nullptr) return;
+    try {
+        if (videoQueue.isEmpty()) return;  // 队列为空直接返回
 
-    QPixmap pixmap = *MainUi->Visonlabel->pixmap();
-    QPainter painter(&pixmap);
-    painter.setRenderHint(QPainter::Antialiasing);
+        const QPixmap originalPixmap = videoQueue[videoQueue.size()-1]; // 取最后一个元素
+        if (originalPixmap.isNull()) return;  // QPixmap 无效也直接返回
 
-    QFont font;
-    font.setBold(true);
-    font.setPointSize(16);
-    painter.setFont(font);
-    painter.setPen(Qt::red);
+        QPixmap scaledPixmap = originalPixmap; // 拷贝一份
 
-    int padding = 10;
-    QRect textRect(padding, padding, pixmap.width() - 2 * padding, 40);
-    painter.drawText(textRect, Qt::AlignRight | Qt::AlignTop, classification);
 
-    painter.end();
-    MainUi->RealTImagelabel->setPixmap(pixmap);
 
+        // 开始绘图操作
+        QPainter painter(&scaledPixmap);
+        if (!painter.isActive()) return; // 保护：防止 painter 无法使用
+
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        QFont font;
+        font.setBold(true);
+        font.setPointSize(16);
+        painter.setFont(font);
+        painter.setPen(Qt::red);
+
+        int padding = 10;
+        QRect textRect(padding, padding, scaledPixmap.width() - 2 * padding, 40);
+        painter.drawText(textRect, Qt::AlignRight | Qt::AlignTop, classification);
+        painter.end();
+        MainUi->RealTImagelabel->setPixmap(scaledPixmap);
+        MainUi->RealTImagelabel->setAlignment(Qt::AlignCenter); // 居中显示
+    }
+    catch (const std::exception &e) {
+        qWarning() << "[updateImageWithLabel] 异常:" << e.what();
+    }
+    catch (...) {
+        qWarning() << "[updateImageWithLabel] 未知异常";
+    }
 }
+
+
+
+
 
 
 void control_interface::setupStatusBar() {

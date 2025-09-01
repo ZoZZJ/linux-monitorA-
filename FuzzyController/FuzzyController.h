@@ -1,54 +1,61 @@
-#ifndef FUZZYLOGICCONTROLLER_H
-#define FUZZYLOGICCONTROLLER_H
+#ifndef FUZZYCONTROLLER_H
+#define FUZZYCONTROLLER_H
 
 #include <QThread>
 #include <QMutex>
 #include <array>
 #include <vector>
-#include "FuzzyController/ProbabilityProvider.h"
-#include "xyplatform.h"
-#include "NeuralNetThread/Probabilities.h"
+#include <deque>
+#include "ProbabilityProvider.h"
 
 struct TriangularMF {
     double a, b, c;
 };
 
+class XyPlatform;
+
 class FuzzyController : public QThread {
     Q_OBJECT
 public:
-    FuzzyController(ProbabilityProvider* probProvider,  QObject* parent = nullptr);
+    explicit FuzzyController(ProbabilityProvider* probProv, QObject* parent = nullptr);
     void run() override;
     void stop();
-    bool GetRunningStatus() const ;
+    bool GetRunningStatus() const;
+
+signals:
+    void SendCorrectionRelatively(float correction);
 
 private:
-    QMutex mutex;
+    mutable QMutex mutex;
     bool IsRunning = false;
-    double previous_ot = 0.0;
     ProbabilityProvider* probProvider;
-    XyPlatform* platform;
+    XyPlatform& platform;
+    double previous_ot = 0.0;
+    std::deque<double> otHistory; // Sliding window for 20 OT values
+    double previousOTWindow = 0.0;
+    bool hasPreviousWindow = false;
+    const double threshold = 0.2; // Correction threshold
+    const size_t windowSize = 20; // Sliding window size
 
     std::array<TriangularMF, 5> ot_mfs;
-    std::array<TriangularMF, 5> dt_mfs;
-    std::array<TriangularMF, 5> cs_mfs;
+       std::array<TriangularMF, 5> dt_mfs;
+       std::array<TriangularMF, 5> cs_mfs;
 
-    struct Rule {
-        int ante1;
-        int ante2;
-        int cons;
-    };
-    std::vector<Rule> rules;
+       struct Rule {
+           int ante1;
+           int ante2;
+           int cons;
+       };
+       std::vector<Rule> rules;
 
-    const double cs_min = -10.0;
-    const double cs_max = 10.0;
-    const double cs_step = 0.01;
-    int num_cs_points = static_cast<int>((cs_max - cs_min) / cs_step) + 1;
+       const double cs_min = -1.0;  // Adjusted
+       const double cs_max = 1.0;   // Adjusted
+       const double cs_step = 0.001;// Adjusted
+       int num_cs_points = static_cast<int>((cs_max - cs_min) / cs_step) + 1;
 
-    double triangularMembership(double x, const TriangularMF& mf) const;
-    std::array<double, 5> fuzzify(double x, const std::array<TriangularMF, 5>& mfs) const;
-    double defuzzify(const std::vector<double>& agg_membership) const;
-
-    double computeCorrection(double offset_tendency, double delta_tendency);
+       double triangularMembership(double x, const TriangularMF& mf) const;
+       std::array<double, 5> fuzzify(double x, const std::array<TriangularMF, 5>& mfs) const;
+       double computeCorrection(double ot_window, double delta_ot_window);
 };
 
-#endif // FUZZYLOGICCONTROLLER_H
+#endif // FUZZYCONTROLLER_H

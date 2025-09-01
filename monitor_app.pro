@@ -23,7 +23,7 @@ contains(QMAKE_HOST.arch, aarch64){
 #arm 64平台
 
 
-    LIBS +=  -L/home/jetson/Monitor-Linux-monitor/libmodbus/lib -lmodbus
+    LIBS +=  -L/home/jetson/Monitor-Linux-monitor0306/libmodbus/lib -lmodbus
     LIBS += -L/usr/lib/aarch64-linux-gnu -lnvinfer
     LIBS += -L/usr/lib/ -lgxiapi \
              -L/usr/local/cuda/lib64 -lcudart \
@@ -35,7 +35,7 @@ contains(QMAKE_HOST.arch, aarch64){
                    /usr/include/opencv4 \
                    /usr/include/opencv4/opencv2 \
                    /usr/include \
-                   /home/jetson/Monitor-Linux-monitor/libmodbus/include/modbus \
+                   /home/jetson/Monitor-Linux-monitor0306/libmodbus/include/modbus \
                    GxViewer/include/ \
                    /usr/include/aarch64-linux-gnu \
                    /usr/include/eigen3 \

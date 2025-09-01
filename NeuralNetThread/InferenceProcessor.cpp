@@ -9,7 +9,7 @@ InferenceProcessor& InferenceProcessor::getInstance() {
 }
 
 InferenceProcessor::InferenceProcessor(QObject *parent)
-    : QObject(parent), m_classifier(new TensorRTClassifier("/home/jetson/Model_pth/DirectionCNN_fp16.engine")), m_queue(nullptr), m_isProcessing(false) {
+    : QObject(parent), m_classifier(new TensorRTClassifier("/home/jetson/Model_pth/DirectionGuidedCNN_5_model_fp16.engine")), m_queue(nullptr), m_isProcessing(false) {
 
     m_classifier->testImage();
 }
@@ -65,6 +65,6 @@ void InferenceProcessor::process() {
             emit classificationResult( probs);
             emit sendMessage(QString("Inference time: %1 seconds").arg(duration.count()));
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(25));
+        std::this_thread::sleep_for(std::chrono::milliseconds(40));
     }
 }

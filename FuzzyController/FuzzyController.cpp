@@ -1,32 +1,33 @@
-#include "FuzzyController/FuzzyController.h"
-#include "FuzzyController/ProbabilityProvider.h"
+#include "FuzzyController.h"
 #include "xyplatform.h"
 #include <algorithm>
 #include <QThread>
+#include <iostream>
+#include <qdebug.h>
 
 FuzzyController::FuzzyController(ProbabilityProvider* probProv, QObject* parent)
-    : probProvider(probProv), platform(&XyPlatform::getInstance()) {
+    : QThread(parent), probProvider(probProv), platform(XyPlatform::getInstance()) {
     // Initialize membership functions
-    ot_mfs[0] = {-1.0, -0.7, -0.4}; // NL
-    ot_mfs[1] = {-0.6, -0.3,  0.0}; // NSc
-    ot_mfs[2] = {-0.2,  0.0,  0.2}; // ZE
-    ot_mfs[3] = { 0.0,  0.3,  0.6}; // PS
-    ot_mfs[4] = { 0.4,  0.7,  1.0}; // PL
-    dt_mfs = ot_mfs; // Same as ot_mfs
-    cs_mfs[0] = {-10.0, -7.0, -4.0}; // NL
-    cs_mfs[1] = { -6.0, -3.0,  0.0}; // NS
-    cs_mfs[2] = { -2.0,  0.0,  2.0}; // ZE
-    cs_mfs[3] = {  0.0,  3.0,  6.0}; // PS
-    cs_mfs[4] = {  4.0,  7.0, 10.0}; // PL
+     ot_mfs[0] = {-1.0, -0.7, -0.4}; // NL
+     ot_mfs[1] = {-0.6, -0.3, 0.0};  // NS
+     ot_mfs[2] = {-0.2, 0.0, 0.2};   // ZE
+     ot_mfs[3] = {0.0, 0.3, 0.6};    // PS
+     ot_mfs[4] = {0.4, 0.7, 1.0};    // PL
+     dt_mfs = ot_mfs;
+     cs_mfs[0] = {-1.0, -0.7, -0.4}; // NL (Adjusted)
+     cs_mfs[1] = {-0.6, -0.3, 0.0};  // NS
+     cs_mfs[2] = {-0.2, 0.0, 0.2};   // ZE
+     cs_mfs[3] = {0.0, 0.3, 0.6};    // PS
+     cs_mfs[4] = {0.4, 0.7, 1.0};    // PL
 
-    // Initialize rules
-    rules = {
-        {4, 0, 0}, {4, 1, 0}, {4, 2, 0}, {4, 3, 1}, {4, 4, 2},
-        {3, 0, 0}, {3, 1, 1}, {3, 2, 1}, {3, 3, 2}, {3, 4, 3},
-        {2, 0, 3}, {2, 1, 2}, {2, 2, 2}, {2, 3, 2}, {2, 4, 1},
-        {1, 0, 3}, {1, 1, 2}, {1, 2, 1}, {1, 3, 1}, {1, 4, 0},
-        {0, 0, 2}, {0, 1, 3}, {0, 2, 4}, {0, 3, 4}, {0, 4, 4}
-    };
+     // Initialize rules
+     rules = {
+         {4, 0, 0}, {4, 1, 0}, {4, 2, 0}, {4, 3, 1}, {4, 4, 2},
+         {3, 0, 0}, {3, 1, 1}, {3, 2, 1}, {3, 3, 2}, {3, 4, 3},
+         {2, 0, 3}, {2, 1, 2}, {2, 2, 2}, {2, 3, 2}, {2, 4, 1},
+         {1, 0, 3}, {1, 1, 2}, {1, 2, 1}, {1, 3, 1}, {1, 4, 0},
+         {0, 0, 2}, {0, 1, 3}, {0, 2, 4}, {0, 3, 4}, {0, 4, 4}
+     };
 }
 
 void FuzzyController::run() {
@@ -38,17 +39,36 @@ void FuzzyController::run() {
         Probabilities probs;
         bool success = probProvider->getProbabilities(probs);
         if (!success) {
-            QThread::msleep(40);
+            QThread::msleep(500); // Short sleep when no probabilities
             continue;
         }
-        double current_ot = probs.left - probs.right;
-        double dt = current_ot - previous_ot;
-        previous_ot = current_ot;
 
-        double correction = computeCorrection(current_ot, dt);
-        std::cout << "correction:" << correction << std::endl;
+        // Calculate offset tendency
+        double ot = probs.left - probs.right;
+        otHistory.push_back(ot);
+        if (otHistory.size() > windowSize) {
+            otHistory.pop_front();
+        }
 
-        QThread::msleep(40);
+        // Compute window metrics
+        double sum = 0.0;
+        for (double ot : otHistory) {
+            sum += ot;
+        }
+        double OT_window = otHistory.empty() ? 0.0 : sum / otHistory.size();
+        double delta_ot_window = hasPreviousWindow ? OT_window - previousOTWindow : 0.0;
+        previousOTWindow = OT_window;
+        hasPreviousWindow = true;
+
+        // Apply correction only if significant offset
+        if (std::abs(OT_window) > threshold) {
+            float correction = static_cast<float>(computeCorrection(OT_window, delta_ot_window));
+            qDebug()<< "Correction: " << correction << endl;
+            // platform->QuickCorrectionRelatively(correction);//暂时弃用
+            emit SendCorrectionRelatively(correction);
+        }
+
+        QThread::msleep(500); // Control loop frequency
     }
     {
         QMutexLocker locker(&mutex);
@@ -56,12 +76,11 @@ void FuzzyController::run() {
     }
 }
 
-
 void FuzzyController::stop() {
-    mutex.lock();
+    QMutexLocker locker(&mutex);
     IsRunning = false;
     mutex.unlock();
-    wait(); // Wait for thread to finish
+    wait();
 }
 
 double FuzzyController::triangularMembership(double x, const TriangularMF& mf) const {
@@ -78,15 +97,11 @@ std::array<double, 5> FuzzyController::fuzzify(double x, const std::array<Triang
     return memberships;
 }
 
-double FuzzyController::computeCorrection(double offset_tendency, double delta_tendency) {
-    // Fuzzify inputs
-    auto mem_ot = fuzzify(offset_tendency, ot_mfs);
-    auto mem_dt = fuzzify(delta_tendency, dt_mfs);
-
-    // Initialize aggregated membership function
+double FuzzyController::computeCorrection(double ot_window, double delta_ot_window) {
+    auto mem_ot = fuzzify(ot_window, ot_mfs);
+    auto mem_dt = fuzzify(delta_ot_window, dt_mfs);
     std::vector<double> agg_membership(num_cs_points, 0.0);
 
-    // Evaluate rules
     for (const auto& rule : rules) {
         double firing_strength = std::min(mem_ot[rule.ante1], mem_dt[rule.ante2]);
         const auto& cons_mf = cs_mfs[rule.cons];
@@ -98,21 +113,16 @@ double FuzzyController::computeCorrection(double offset_tendency, double delta_t
         }
     }
 
-    // Defuzzify using centroid method
-    double numerator = 0.0;
-    double denominator = 0.0;
+    double numerator = 0.0, denominator = 0.0;
     for (int k = 0; k < num_cs_points; ++k) {
         double x_cs = cs_min + k * cs_step;
         numerator += x_cs * agg_membership[k];
         denominator += agg_membership[k];
     }
-    if (denominator > 0.0) {
-        return numerator / denominator;
-    } else {
-        return 0.0; // No correction if no rules fire
-    }
+    return denominator > 0.0 ? numerator / denominator : 0.0;
 }
 
 bool FuzzyController::GetRunningStatus() const {
+    QMutexLocker locker(&mutex);
     return IsRunning;
 }

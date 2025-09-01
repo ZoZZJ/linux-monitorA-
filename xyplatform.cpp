@@ -10,6 +10,7 @@
 #include <QThread>
 #include <QDebug>
 #include <QButtonGroup>
+#include "FuzzyController/FuzzyController.h"
 
 XyPlatform::XyPlatform(QWidget *parent)
     : QWidget(parent), xyui(new Ui::XyPlatform)
@@ -73,6 +74,19 @@ void XyPlatform::setupUI() {
 
 
 }
+
+
+void XyPlatform::QuickCorrectionRelatively(float correction){
+    //if(correction<2) return true;
+
+    correction/=5;
+    controller->MoveToRelativePos(1,correction);
+
+
+    //qDebug()<<"一1dxdnjksfnka"<<endl;
+}
+
+
 
 void XyPlatform::setupConnections() {
 
@@ -252,8 +266,8 @@ void XyPlatform::on_QMoveEnableWidgetButton_clicked()
     float postion0 =  xyui->TargetYposEdit->text().toFloat();
     float postion1 = xyui->TargetXposEdit->text().toFloat();
 
-    controller->MoveToAbsolutePos(0,postion0);
-    controller->MoveToAbsolutePos(1,postion1);
+    controller->MoveToAbsolutePos(0,postion1);
+    controller->MoveToAbsolutePos(1,postion0);
 }
 
 

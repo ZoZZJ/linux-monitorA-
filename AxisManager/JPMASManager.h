@@ -2,7 +2,7 @@
 #define JPMASMANAGER_H
 
 
-#include <modbus.h>
+#include <libmodbus/include/modbus.h>
 #include <vector>
 
 
